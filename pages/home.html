@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waffle Heaven - Delicious Waffles in White River</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/main.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <h1><a href="index.html">Waffle Heaven</a></h1>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="pages/menu.html">Menu</a></li>
+                <li><a href="pages/reservations.html">Reservations</a></li>
+                <li><a href="pages/order-online.html">Order Online</a></li>
+                <li><a href="pages/contact.html">Contact</a></li>
+                <li class="account-dropdown">
+                    <a href="#" id="account-link">Account</a>
+                    <div class="dropdown-content">
+                        <a href="pages/login.html">Login</a>
+                        <a href="pages/register.html">Register</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="cart-icon">
+                <a href="pages/cart.html">
+                    <img src="img/cart-icon.png" alt="Shopping Cart">
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+            <div class="hamburger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Experience Waffle Paradise</h2>
+                <p>Indulge in our delicious homemade waffles with a variety of toppings</p>
+                <div class="hero-buttons">
+                    <a href="pages/menu.html" class="btn primary-btn">View Menu</a>
+                    <a href="pages/order-online.html" class="btn secondary-btn">Order Now</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="featured-categories">
+            <h2 class="section-title">Explore Our Menu</h2>
+            <div class="category-grid">
+                <div class="category-card">
+                    <img src="img/sweet-waffles.jpg" alt="Sweet Waffles">
+                    <h3>Sweet Waffles</h3>
+                    <a href="pages/menu.html#sweet" class="btn small-btn">View All</a>
+                </div>
+                <div class="category-card">
+                    <img src="img/savory-waffles.jpg" alt="Savory Waffles">
+                    <h3>Savory Waffles</h3>
+                    <a href="pages/menu.html#savory" class="btn small-btn">View All</a>
+                </div>
+                <div class="category-card">
+                    <img src="img/beverages.jpg" alt="Beverages">
+                    <h3>Beverages</h3>
+                    <a href="pages/menu.html#beverages" class="btn small-btn">View All</a>
+                </div>
+                <div class="category-card">
+                    <img src="img/special-combos.jpg" alt="Special Combos">
+                    <h3>Special Combos</h3>
+                    <a href="pages/menu.html#combos" class="btn small-btn">View All</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="special-offers">
+            <h2 class="section-title">Special Offers</h2>
+            <div class="offers-container">
+                <div class="offer-card">
+                    <div class="offer-content">
+                        <h3>Family Waffle Platter</h3>
+                        <p>Get 15% off when you order our family waffle platter with 4 waffles and 4 drinks</p>
+                        <a href="pages/order-online.html#special-offers" class="btn primary-btn">Order Now</a>
+                    </div>
+                </div>
+                <div class="offer-card">
+                    <div class="offer-content">
+                        <h3>Weekday Special</h3>
+                        <p>Buy 1 Get 1 Free on all waffles every Tuesday from 2-5 PM</p>
+                        <a href="pages/reservations.html" class="btn primary-btn">Reserve Now</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="reservation-cta">
+            <div class="cta-content">
+                <h2>Book a Table</h2>
+                <p>Reserve your spot for a wonderful waffle experience</p>
+                <a href="pages/reservations.html" class="btn primary-btn">Make Reservation</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Waffle Heaven</h3>
+                <p>11 Spitskop Street<br>White River, Mpumalanga<br>South Africa</p>
+                <p>Phone: 0822166658</p>
+                <p>Email: patrickjunior1010@gmail.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hours</h3>
+                <p>Monday - Thursday: 8:00 AM - 8:00 PM</p>
+                <p>Friday - Saturday: 8:00 AM - 10:00 PM</p>
+                <p>Sunday: 9:00 AM - 6:00 PM</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="pages/menu.html">Menu</a></li>
+                    <li><a href="pages/reservations.html">Reservations</a></li>
+                    <li><a href="pages/order-online.html">Order Online</a></li>
+                    <li><a href="pages/contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-media">
+                    <a href="#" class="social-icon">Facebook</a>
+                    <a href="#" class="social-icon">Instagram</a>
+                    <a href="#" class="social-icon">Twitter</a>
+                </div>
+                <div class="newsletter">
+                    <h4>Subscribe to our newsletter</h4>
+                    <form id="newsletter-form">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn primary-btn">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 Waffle Heaven. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

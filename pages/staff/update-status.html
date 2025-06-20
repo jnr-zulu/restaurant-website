@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Order Status - Waffle Heaven</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <script src="../../js/main.js" defer></script>
+    <script src="../../js/admin.js" defer></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <h2>Waffle Heaven</h2>
+                <p>Staff Portal</p>
+            </div>
+            <div class="staff-info">
+                <img src="../../img/staff-avatar.png" alt="Staff Avatar" class="staff-avatar">
+                <p id="staff-name">Staff User</p>
+            </div>
+            <nav class="admin-nav">
+                <ul>
+                    <li><a href="orders.html">View Orders</a></li>
+                    <li><a href="update-status.html" class="active">Update Status</a></li>
+                    <li><a href="#" class="logout-btn">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="admin-header">
+                <h1>Update Order Status</h1>
+                <div class="header-actions">
+                    <a href="orders.html" class="btn secondary-btn">Back to Orders</a>
+                </div>
+            </header>
+
+            <div class="content-container">
+                <div class="order-update-container">
+                    <div class="order-details-card">
+                        <h2>Order #<span id="order-id">1001</span></h2>
+                        
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <span>Customer:</span>
+                                <span id="customer-name">John Doe</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Order Type:</span>
+                                <span id="order-type">Delivery</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Order Date:</span>
+                                <span id="order-date">March 25, 2025 at 2:30 PM</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Current Status:</span>
+                                <span id="current-status" class="status pending">Pending</span>
+                            </div>
+                        </div>
+                        
+                        <div class="order-items">
+                            <h3>Items</h3>
+                            <ul id="order-items-list">
+                                <li>1x Classic Maple - R45.99</li>
+                                <li>1x Chicken & Waffles - R75.99</li>
+                                <li>1x Fresh Juice - R25.99</li>
+                            </ul>
+                            <div class="order-total">
+                                Total: <span id="order-total">R145.97</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-update-form">
+                        <h3>Update Status</h3>
+                        <form id="update-status-form">
+                            <div class="form-group">
+                                <label for="new-status">New Status</label>
+                                <select id="new-status" name="status" required>
+                                    <option value="">Select new status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="confirmed">Confirmed</option>
+                                    <option value="preparing">Preparing</option>
+                                    <option value="ready">Ready for Pickup/Delivery</option>
+                                    <option value="delivered">Delivered/Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="estimated-time">Estimated Completion Time (Optional)</label>
+                                <input type="time" id="estimated-time" name="estimated-time">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="status-notes">Notes (Optional)</label>
+                                <textarea id="status-notes" name="notes" rows="3" placeholder="Add any notes about this status update"></textarea>
+                            </div>
+                            
+                            <div class="form-group checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="notify-customer" name="notify-customer" checked>
+                                    Send notification to customer
+                                </label>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn primary-btn">Update Status</button>
+                                <button type="button" id="cancel-btn" class="btn secondary-btn">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="status-history">
+                    <h3>Status History</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-date">March 25, 2025 - 2:30 PM</div>
+                            <div class="timeline-content">
+                                <span class="status pending">Pending</span>
+                                <p>Order received</p>
+                            </div>
+                        </div>
+                        <!-- More status history items would be added dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Updated Modal -->
+    <div id="status-updated-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Status Updated Successfully</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-message">
+                    <div class="success-icon">✓</div>
+                    <p>The order status has been successfully updated.</p>
+                    <p>A notification has been sent to the customer.</p>
+                </div>
+                <div class="modal-actions">
+                    <button id="return-to-orders" class="btn primary-btn">Return to Orders</button>
+                    <button id="update-another" class="btn secondary-btn">Update Another Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sample data - in a real app, this would be fetched from the server
+            const sampleOrders = [
+                {
+                    id: 1001,
+                    customer: {
+                        name: "John Doe",
+                        email: "john@example.com",
+                        phone: "0831234567",
+                        address: "123 Main St, White River, Mpumalanga"
+                    },
+                    orderType: "delivery",
+                    total: 145.97,
+                    subtotal: 126.93,
+                    tax: 19.04,
+                    status: "pending",
+                    date: "2025-03-25T14:30:00",
+                    items: [
+                        { name: "Classic Maple", quantity: 1, price: 45.99 },
+                        { name: "Chicken & Waffles", quantity: 1, price: 75.99 },
+                        { name: "Fresh Juice", quantity: 1, price: 25.99 }
+                    ],
+                    statusHistory: [
+                        {
+                            status: "pending",
+                            date: "2025-03-25T14:30:00",
+                            notes: "Order received"
+                        }
+                    ]
+                },
+                {
+                    id: 1002,
+                    customer: {
+                        name: "Jane Smith",
+                        email: "jane@example.com",
+                        phone: "0847654321",
+                        address: ""
+                    },
+                    orderType: "pickup",
+                    total: 96.98,
+                    subtotal: 84.33,
+                    tax: 12.65,
+                    status: "preparing",
+                    date: "2025-03-25T15:45:00",
+                    items: [
+                        { name: "Chocolate Dream", quantity: 1, price: 55.99 },
+                        { name: "Coffee", quantity: 2, price: 22.99 }
+                    ],
+                    statusHistory: [
+                        {
+                            status: "pending",
+                            date: "2025-03-25T15:45:00",
+                            notes: "Order received"
+                        },
+                        {
+                            status: "confirmed",
+                            date: "2025-03-25T15:50:00",
+                            notes: "Order confirmed"
+                        },
+                        {
+                            status: "preparing",
+                            date: "2025-03-25T16:00:00",
+                            notes: "Order is being prepared"
+                        }
+                    ]
+                }
+            ];
+            
+            // Check if order ID is in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('id') || "1001"; // Default to first order if none specified
+            
+            // Load order details
+            loadOrderDetails(orderId);
+            
+            // Setup form submission
+            const updateForm = document.getElementById('update-status-form');
+            if (updateForm) {
+                updateForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form data
+                    const newStatus = document.getElementById('new-status').value;
+                    const estimatedTime = document.getElementById('estimated-time').value;
+                    const notes = document.getElementById('status-notes').value;
+                    const notifyCustomer = document.getElementById('notify-customer').checked;
+                    
+                    // Validate form
+                    if (!newStatus) {
+                        alert('Please select a new status');
+                        return;
+                    }
+                    
+                    // In a real app, this would update the database
+                    console.log('Updating order status', {
+                        orderId,
+                        newStatus,
+                        estimatedTime,
+                        notes,
+                        notifyCustomer
+                    });
+                    
+                    // Show success modal
+                    document.getElementById('status-updated-modal').style.display = 'block';
+                });
+            }
+            
+            // Setup cancel button
+            const cancelBtn = document.getElementById('cancel-btn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function() {
+                    window.location.href = 'orders.html';
+                });
+            }
+            
+            // Setup modal buttons
+            const closeModal = document.querySelector('.close-modal');
+            if (closeModal) {
+                closeModal.addEventListener('click', function() {
+                    document.getElementById('status-updated-modal').style.display = 'none';
+                });
+            }
+            
+            const returnToOrdersBtn = document.getElementById('return-to-orders');
+            if (returnToOrdersBtn) {
+                returnToOrdersBtn.addEventListener('click', function() {
+                    window.location.href = 'orders.html';
+                });
+            }
+            
+            const updateAnotherBtn = document.getElementById('update-another');
+            if (updateAnotherBtn) {
+                updateAnotherBtn.addEventListener('click', function() {
+                    document.getElementById('status-updated-modal').style.display = 'none';
+                    document.getElementById('update-status-form').reset();
+                });
+            }
+        });
+        
+        function loadOrderDetails(orderId) {
+            // In a real application, this function would fetch order details from the server
+            // For demo purposes, we're using hardcoded data
+            
+            // Find the order in our sample data
+            let order;
+            
+            // Normally we would fetch this data from a database
+            if (orderId === "1001") {
+                order = {
+                    id: 1001,
+                    customer: {
+                        name: "John Doe",
+                        email: "john@example.com",
+                        phone: "0831234567",
+                        address: "123 Main St, White River, Mpumalanga"
+                    },
+                    orderType: "Delivery",
+                    total: 145.97,
+                    status: "pending",
+                    date: "March 25, 2025 at 2:30 PM",
+                    items: [
+                        { name: "Classic Maple", quantity: 1, price: 45.99 },
+                        { name: "Chicken & Waffles", quantity: 1, price: 75.99 },
+                        { name: "Fresh Juice", quantity: 1, price: 25.99 }
+                    ],
+                    statusHistory: [
+                        {
+                            status: "pending",
+                            date: "March 25, 2025 - 2:30 PM",
+                            notes: "Order received"
+                        }
+                    ]
+                };
+            } else if (orderId === "1002") {
+                order = {
+                    id: 1002,
+                    customer: {
+                        name: "Jane Smith",
+                        email: "jane@example.com",
+                        phone: "0847654321"
+                    },
+                    orderType: "Pickup",
+                    total: 96.98,
+                    status: "preparing",
+                    date: "March 25, 2025 at 3:45 PM",
+                    items: [
+                        { name: "Chocolate Dream", quantity: 1, price: 55.99 },
+                        { name: "Coffee", quantity: 2, price: 22.99 }
+                    ],
+                    statusHistory: [
+                        {
+                            status: "pending",
+                            date: "March 25, 2025 - 3:45 PM",
+                            notes: "Order received"
+                        },
+                        {
+                            status: "confirmed",
+                            date: "March 25, 2025 - 3:50 PM",
+                            notes: "Order confirmed"
+                        },
+                        {
+                            status: "preparing",
+                            date: "March 25, 2025 - 4:00 PM",
+                            notes: "Order is being prepared"
+                        }
+                    ]
+                };
+            } else {
+                // Default order if ID not found
+                order = {
+                    id: orderId,
+                    customer: {
+                        name: "Unknown Customer",
+                        email: "customer@example.com",
+                        phone: "0800000000"
+                    },
+                    orderType: "Unknown",
+                    total: 0,
+                    status: "pending",
+                    date: "Unknown date",
+                    items: [],
+                    statusHistory: [
+                        {
+                            status: "pending",
+                            date: "Unknown date",
+                            notes: "Order received"
+                        }
+                    ]
+                };
+            }
+            
+            // Update the page with order details
+            document.getElementById('order-id').textContent = order.id;
+            document.getElementById('customer-name').textContent = order.customer.name;
+            document.getElementById('order-type').textContent = order.orderType;
+            document.getElementById('order-date').textContent = order.date;
+            
+            // Update status display
+            const statusElement = document.getElementById('current-status');
+            statusElement.textContent = order.status;
+            statusElement.className = "status " + order.status;
+            
+            // Update order items list
+            const itemsList = document.getElementById('order-items-list');
+            itemsList.innerHTML = '';
+            
+            if (order.items.length === 0) {
+                itemsList.innerHTML = '<li>No items in this order</li>';
+            } else {
+                order.items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = `${item.quantity}x ${item.name} - R${item.price.toFixed(2)}`;
+                    itemsList.appendChild(li);
+                });
+            }
+            
+            // Update order total
+            document.getElementById('order-total').textContent = `R${order.total.toFixed(2)}`;
+            
+            // Update status history timeline
+            const timeline = document.querySelector('.timeline');
+            timeline.innerHTML = '';
+            
+            order.statusHistory.forEach(statusItem => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                
+                timelineItem.innerHTML = `
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">${statusItem.date}</div>
+                    <div class="timeline-content">
+                        <span class="status ${statusItem.status}">${statusItem.status}</span>
+                        <p>${statusItem.notes}</p>
+                    </div>
+                `;
+                
+                timeline.appendChild(timelineItem);
+            });
+            
+            // Set available statuses in dropdown (exclude current status)
+            const statusDropdown = document.getElementById('new-status');
+            
+            // Clear existing options (except the first placeholder)
+            while (statusDropdown.options.length > 1) {
+                statusDropdown.remove(1);
+            }
+            
+            // Define the status flow (the available next statuses based on current status)
+            const statusFlow = {
+                "pending": ["confirmed", "cancelled"],
+                "confirmed": ["preparing", "cancelled"],
+                "preparing": ["ready", "cancelled"],
+                "ready": ["delivered", "cancelled"],
+                "delivered": [],
+                "cancelled": []
+            };
+            
+            // Available next statuses
+            let availableStatuses = statusFlow[order.status] || [];
+            
+            // If there are no available next statuses, show a message
+            if (availableStatuses.length === 0) {
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "No status changes available";
+                statusDropdown.appendChild(option);
+                statusDropdown.disabled = true;
+            } else {
+                // Add available statuses to dropdown
+                availableStatuses.forEach(status => {
+                    const option = document.createElement('option');
+                    option.value = status;
+                    
+                    // Format status text for display (capitalize first letter)
+                    const displayText = status.charAt(0).toUpperCase() + status.slice(1);
+                    option.textContent = displayText;
+                    
+                    statusDropdown.appendChild(option);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

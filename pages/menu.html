@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - Waffle Heaven</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/menu.css">
+    <script src="../js/main.js" defer></script>
+    <script src="../js/menu.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <h1><a href="../index.html">Waffle Heaven</a></h1>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="menu.html" class="active">Menu</a></li>
+                <li><a href="reservations.html">Reservations</a></li>
+                <li><a href="order-online.html">Order Online</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li class="account-dropdown">
+                    <a href="#" id="account-link">Account</a>
+                    <div class="dropdown-content">
+                        <a href="login.html">Login</a>
+                        <a href="register.html">Register</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="cart-icon">
+                <a href="cart.html">
+                    <img src="../img/cart-icon.png" alt="Shopping Cart">
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+            <div class="hamburger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <section class="menu-hero">
+            <div class="menu-hero-content">
+                <h2>Our Menu</h2>
+                <p>Discover our delicious waffles made with fresh ingredients</p>
+            </div>
+        </section>
+        <section class="menu-categories">
+            <div class="category-nav">
+                <ul>
+                    <li><a href="#sweet-waffles" class="active">Sweet Waffles</a></li>
+                    <li><a href="#savory-waffles">Savory Waffles</a></li>
+                    <li><a href="#combos">Combos</a></li>
+                    <li><a href="#drinks">Drinks</a></li>
+                </ul>
+            </div>
+        </section>
+        <section id="sweet-waffles" class="menu-section">
+            <h2 class="section-title">Sweet Waffles</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <img src="../img/menu/classic-maple.jpg" alt="Classic Maple">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Classic Maple</h3>
+                            <span class="price">R170.81</span>
+                        </div>
+                        <p>Traditional waffle with pure maple syrup</p>
+                        <button class="btn primary-btn add-to-cart" data-id="1" data-name="Classic Maple" data-price="170.81">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <img src="../img/menu/chocolate-dream.jpg" alt="Chocolate Dream">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Chocolate Dream</h3>
+                            <span class="price">R208.81</span>
+                        </div>
+                        <p>Rich chocolate waffle with chocolate sauce and whipped cream</p>
+                        <button class="btn primary-btn add-to-cart" data-id="2" data-name="Chocolate Dream" data-price="208.81">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <img src="../img/menu/berry-bliss.jpg" alt="Berry Bliss">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Berry Bliss</h3>
+                            <span class="price">R227.81</span>
+                        </div>
+                        <p>Fresh mixed berries with cream and berry compote</p>
+                        <button class="btn primary-btn add-to-cart" data-id="3" data-name="Berry Bliss" data-price="227.81">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <img src="../img/menu/banana-nutella.jpg" alt="Banana Nutella">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Banana Nutella</h3>
+                            <span class="price">R208.81</span>
+                        </div>
+                        <p>Fresh bananas and Nutella with whipped cream</p>
+                        <button class="btn primary-btn add-to-cart" data-id="4" data-name="Banana Nutella" data-price="208.81">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="savory-waffles" class="menu-section">
+            <h2 class="section-title">Savory Waffles</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <img src="../img/menu/bacon-egg.jpg" alt="Bacon & Egg">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Bacon & Egg</h3>
+                            <span class="price">R246.81</span>
+                        </div>
+                        <p>Crispy bacon and sunny-side-up egg on a savory waffle</p>
+                        <button class="btn primary-btn add-to-cart" data-id="5" data-name="Bacon & Egg" data-price="246.81">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <img src="../img/menu/chicken-waffles.jpg" alt="Chicken & Waffles">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Chicken & Waffles</h3>
+                            <span class="price">R284.81</span>
+                        </div>
+                        <p>Crispy fried chicken with maple syrup</p>
+                        <button class="btn primary-btn add-to-cart" data-id="6" data-name="Chicken & Waffles" data-price="284.81">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <img src="../img/menu/avocado-feta.jpg" alt="Avocado & Feta">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Avocado & Feta</h3>
+                            <span class="price">R265.81</span>
+                        </div>
+                        <p>Smashed avocado with feta cheese and cherry tomatoes</p>
+                        <button class="btn primary-btn add-to-cart" data-id="7" data-name="Avocado & Feta" data-price="265.81">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <img src="../img/menu/ham-cheese.jpg" alt="Ham & Cheese">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Ham & Cheese</h3>
+                            <span class="price">R246.81</span>
+                        </div>
+                        <p>Premium ham and melted cheese with herbs</p>
+                        <button class="btn primary-btn add-to-cart" data-id="8" data-name="Ham & Cheese" data-price="246.81">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="combos" class="menu-section">
+            <h2 class="section-title">Combo Deals</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <img src="../img/menu/sweet-duo.jpg" alt="Sweet Duo">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Sweet Duo</h3>
+                            <span class="price">R322.81</span>
+                        </div>
+                        <p>Choose any two sweet waffles with a drink</p>
+                        <button class="btn primary-btn add-to-cart" data-id="9" data-name="Sweet Duo" data-price="322.81">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <img src="../img/menu/savory-brunch.jpg" alt="Savory Brunch">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Savory Brunch</h3>
+                            <span class="price">R379.81</span>
+                        </div>
+                        <p>Any savory waffle with sides and a drink</p>
+                        <button class="btn primary-btn add-to-cart" data-id="10" data-name="Savory Brunch" data-price="379.81">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <img src="../img/menu/family-feast.jpg" alt="Family Feast">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Family Feast</h3>
+                            <span class="price">R759.81</span>
+                        </div>
+                        <p>Four waffles of your choice with drinks</p>
+                        <button class="btn primary-btn add-to-cart" data-id="11" data-name="Family Feast" data-price="759.81">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="drinks" class="menu-section">
+            <h2 class="section-title">Drinks</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <img src="../img/menu/coffee.jpg" alt="Coffee">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Coffee</h3>
+                            <span class="price">R75.81</span>
+                        </div>
+                        <p>Fresh brewed coffee, regular or decaf</p>
+                        <button class="btn primary-btn add-to-cart" data-id="12" data-name="Coffee" data-price="75.81">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <img src="../img/menu/fresh-juice.jpg" alt="Fresh Juice">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Fresh Juice</h3>
+                            <span class="price">R94.81</span>
+                        </div>
+                        <p>Orange, apple, or mixed fruit juice</p>
+                        <button class="btn primary-btn add-to-cart" data-id="13" data-name="Fresh Juice" data-price="94.81">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <img src="../img/menu/milkshake.jpg" alt="Milkshake">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Milkshake</h3>
+                            <span class="price">R113.81</span>
+                        </div>
+                        <p>Vanilla, chocolate, or strawberry</p>
+                        <button class="btn primary-btn add-to-cart" data-id="14" data-name="Milkshake" data-price="113.81">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <img src="../img/menu/hot-chocolate.jpg" alt="Hot Chocolate">
+                    <div class="menu-item-content">
+                        <div class="menu-item-header">
+                            <h3>Hot Chocolate</h3>
+                            <span class="price">R94.81</span>
+                        </div>
+                        <p>Rich hot chocolate with whipped cream</p>
+                        <button class="btn primary-btn add-to-cart" data-id="15" data-name="Hot Chocolate" data-price="94.81">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+     <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Waffle Heaven</h3>
+                <p>11 Spitskop Street<br>White River, Mpumalanga<br>South Africa</p>
+                <p>Phone: 0822166658</p>
+                <p>Email: patrickjunior1010@gmail.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hours</h3>
+                <p>Monday - Thursday: 8:00 AM - 8:00 PM</p>
+                <p>Friday - Saturday: 8:00 AM - 10:00 PM</p>
+                <p>Sunday: 9:00 AM - 6:00 PM</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="pages/menu.html">Menu</a></li>
+                    <li><a href="pages/reservations.html">Reservations</a></li>
+                    <li><a href="pages/order-online.html">Order Online</a></li>
+                    <li><a href="pages/contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-media">
+                    <a href="#" class="social-icon">Facebook</a>
+                    <a href="#" class="social-icon">Instagram</a>
+                    <a href="#" class="social-icon">Twitter</a>
+                </div>
+                <div class="newsletter">
+                    <h4>Subscribe to our newsletter</h4>
+                    <form id="newsletter-form">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn primary-btn">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 Waffle Heaven. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

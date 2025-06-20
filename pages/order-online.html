@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Online - Waffle Heaven</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/menu.css">
+    <link rel="stylesheet" href="../css/order-online.css">
+    <script src="../js/main.js" defer></script>
+    <script src="../js/menu.js" defer></script>
+    <script src="../js/orders.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <h1><a href="../index.html">Waffle Heaven</a></h1>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="reservations.html">Reservations</a></li>
+                <li><a href="order-online.html" class="active">Order Online</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li class="account-dropdown">
+                    <a href="#" id="account-link">Account</a>
+                    <div class="dropdown-content">
+                        <a href="login.html">Login</a>
+                        <a href="register.html">Register</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="cart-icon">
+                <a href="cart.html">
+                    <img src="../img/cart-icon.png" alt="Shopping Cart">
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+            <div class="hamburger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="order-hero">
+            <div class="order-hero-content">
+                <h2>Order Online</h2>
+                <p>Have your favorite waffles delivered to your doorstep or ready for pickup</p>
+            </div>
+        </section>
+
+        <section class="order-options">
+            <div class="container">
+                <div class="order-type-selection">
+                    <h3>Choose Order Type</h3>
+                    <div class="order-types">
+                        <div class="order-type-card active" id="delivery-option">
+                            <div class="order-type-icon">🚚</div>
+                            <h4>Delivery</h4>
+                            <p>We deliver within White River area</p>
+                            <p class="delivery-note">Free delivery for orders over R250</p>
+                        </div>
+                        <div class="order-type-card" id="pickup-option">
+                            <div class="order-type-icon">🏠</div>
+                            <h4>Pickup</h4>
+                            <p>Ready in 20-30 minutes</p>
+                            <p class="pickup-note">10% discount on pickup orders</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="delivery-form" class="address-form">
+                    <h3>Delivery Address</h3>
+                    <form id="address-form">
+                        <div class="form-group">
+                            <label for="street">Street Address</label>
+                            <input type="text" id="street" name="street" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" value="White River" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="province">Province</label>
+                                <input type="text" id="province" name="province" value="Mpumalanga" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="postal">Postal Code</label>
+                                <input type="text" id="postal" name="postal" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="delivery-notes">Delivery Instructions (Optional)</label>
+                            <textarea id="delivery-notes" name="delivery-notes" rows="2"></textarea>
+                        </div>
+                        <button type="submit" class="btn primary-btn">Continue to Menu</button>
+                    </form>
+                </div>
+                
+                <div id="pickup-form" class="pickup-info" style="display: none;">
+                    <h3>Pickup Information</h3>
+                    <div class="restaurant-details">
+                        <div class="restaurant-img">
+                            <img src="../img/restaurant-exterior.jpg" alt="Waffle Heaven Restaurant">
+                        </div>
+                        <div class="restaurant-info">
+                            <h4>Waffle Heaven - White River</h4>
+                            <p>11 Spitskop Street, White River, Mpumalanga</p>
+                            <p>Phone: 0822166658</p>
+                            <p>Hours: 8:00 AM - 8:00 PM</p>
+                            <p class="estimated-time">Your order will be ready for pickup in approximately 20-30 minutes</p>
+                        </div>
+                    </div>
+                    <button id="continue-to-menu" class="btn primary-btn">Continue to Menu</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="menu-section" class="menu-section" style="display: none;">
+            <div class="container">
+                <h2 class="section-title">Menu</h2>
+
+                <div class="category-nav">
+                    <ul>
+                        <li><a href="#sweet" class="active">Sweet Waffles</a></li>
+                        <li><a href="#savory">Savory Waffles</a></li>
+                        <li><a href="#beverages">Beverages</a></li>
+                        <li><a href="#combos">Combos</a></li>
+                        <li><a href="#special-offers">Special Offers</a></li>
+                    </ul>
+                </div>
+
+                <div id="sweet" class="menu-category">
+                    <h3 class="category-title">Sweet Waffles</h3>
+                    <div class="menu-grid">
+                        <div class="menu-item">
+                            <img src="../img/menu/classic-maple.jpg" alt="Classic Maple Waffle">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Classic Maple</h4>
+                                    <span class="price">R45.99</span>
+                                </div>
+                                <p>Traditional waffle with maple syrup and butter</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-1">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-1" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="1" data-name="Classic Maple" data-price="45.99">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item">
+                            <img src="../img/menu/chocolate-dream.jpg" alt="Chocolate Dream Waffle">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Chocolate Dream</h4>
+                                    <span class="price">R55.99</span>
+                                </div>
+                                <p>Waffle topped with chocolate sauce, chocolate chips, and whipped cream</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-2">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-2" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="2" data-name="Chocolate Dream" data-price="55.99">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item">
+                            <img src="../img/menu/berry-bliss.jpg" alt="Berry Bliss Waffle">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Berry Bliss</h4>
+                                    <span class="price">R60.99</span>
+                                </div>
+                                <p>Waffle with mixed berries, berry compote, and vanilla ice cream</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-3">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-3" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="3" data-name="Berry Bliss" data-price="60.99">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item">
+                            <img src="../img/menu/banana-nutella.jpg" alt="Banana Nutella Waffle">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Banana Nutella</h4>
+                                    <span class="price">R58.99</span>
+                                </div>
+                                <p>Waffle with sliced bananas, Nutella, and crushed hazelnuts</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-4">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-4" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="4" data-name="Banana Nutella" data-price="58.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="savory" class="menu-category">
+                    <h3 class="category-title">Savory Waffles</h3>
+                    <div class="menu-grid">
+                        <div class="menu-item">
+                            <img src="../img/menu/bacon-egg.jpg" alt="Bacon & Egg Waffle">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Bacon & Egg</h4>
+                                    <span class="price">R65.99</span>
+                                </div>
+                                <p>Waffle with crispy bacon, fried egg, and maple syrup</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-5">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-5" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="5" data-name="Bacon & Egg" data-price="65.99">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item">
+                            <img src="../img/menu/chicken-waffles.jpg" alt="Chicken & Waffles">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Chicken & Waffles</h4>
+                                    <span class="price">R75.99</span>
+                                </div>
+                                <p>Golden waffle with crispy fried chicken and honey butter</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-6">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-6" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="6" data-name="Chicken & Waffles" data-price="75.99">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item">
+                            <img src="../img/menu/avocado-feta.jpg" alt="Avocado & Feta Waffle">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Avocado & Feta</h4>
+                                    <span class="price">R70.99</span>
+                                </div>
+                                <p>Waffle with smashed avocado, crumbled feta, and cherry tomatoes</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-7">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-7" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="7" data-name="Avocado & Feta" data-price="70.99">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item">
+                            <img src="../img/menu/ham-cheese.jpg" alt="Ham & Cheese Waffle">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Ham & Cheese</h4>
+                                    <span class="price">R68.99</span>
+                                </div>
+                                <p>Waffle with ham, melted cheese, and hollandaise sauce</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-8">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-8" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="8" data-name="Ham & Cheese" data-price="68.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="beverages" class="menu-category">
+                    <h3 class="category-title">Beverages</h3>
+                    <div class="menu-grid">
+                        <div class="menu-item">
+                            <img src="../img/menu/coffee.jpg" alt="Coffee">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Coffee</h4>
+                                    <span class="price">R22.99</span>
+                                </div>
+                                <p>Regular or decaf coffee</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-9">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-9" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="9" data-name="Coffee" data-price="22.99">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item">
+                            <img src="../img/menu/fresh-juice.jpg" alt="Fresh Juice">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Fresh Juice</h4>
+                                    <span class="price">R25.99</span>
+                                </div>
+                                <p>Orange, apple, or mixed fruit juice</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-10">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-10" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="10" data-name="Fresh Juice" data-price="25.99">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item">
+                            <img src="../img/menu/milkshake.jpg" alt="Milkshake">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Milkshake</h4>
+                                    <span class="price">R35.99</span>
+                                </div>
+                                <p>Chocolate, vanilla, or strawberry milkshake</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-11">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-11" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="11" data-name="Milkshake" data-price="35.99">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item">
+                            <img src="../img/menu/hot-chocolate.jpg" alt="Hot Chocolate">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Hot Chocolate</h4>
+                                    <span class="price">R30.99</span>
+                                </div>
+                                <p>Rich and creamy hot chocolate with whipped cream</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-12">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-12" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="12" data-name="Hot Chocolate" data-price="30.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="combos" class="menu-category">
+                    <h3 class="category-title">Combos</h3>
+                    <div class="menu-grid">
+                        <div class="menu-item">
+                            <img src="../img/menu/sweet-duo.jpg" alt="Sweet Duo">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Sweet Duo</h4>
+                                    <span class="price">R65.99</span>
+                                </div>
+                                <p>Any sweet waffle with a coffee or juice</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-13">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-13" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="13" data-name="Sweet Duo" data-price="65.99">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item">
+                            <img src="../img/menu/savory-brunch.jpg" alt="Savory Brunch">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Savory Brunch</h4>
+                                    <span class="price">R85.99</span>
+                                </div>
+                                <p>Any savory waffle with a coffee or juice</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-14">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-14" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="14" data-name="Savory Brunch" data-price="85.99">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item">
+                            <img src="../img/menu/family-feast.jpg" alt="Family Feast">
+                            <div class="menu-item-content">
+                                <div class="menu-item-header">
+                                    <h4>Family Feast</h4>
+                                    <span class="price">R220.99</span>
+                                </div>
+                                <p>4 waffles of your choice (2 sweet, 2 savory) and 4 beverages</p>
+                                <div class="quantity-selector">
+                                    <label for="quantity-15">Quantity:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn decrease">-</button>
+                                        <input type="number" class="quantity-input" id="quantity-15" value="1" min="1">
+                                        <button type="button" class="quantity-btn increase">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn primary-btn add-to-cart" data-id="15" data-name="Family Feast" data-price="220.99">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="special-offers" class="menu-category">
+                    <h3 class="category-title">Special Offers</h3>
+                    <div class="special-offers-container">
+                        <div class="special-offer-card">
+                            <div class="offer-badge">15% OFF</div>
+                            <h4>Family Waffle Platter</h4>
+                            <p>Get 15% off when you order our family waffle platter with 4 waffles and 4 drinks</p>
+                            <button class="btn primary-btn add-special-offer" data-id="family-platter">Add to Cart</button>
+                        </div>
+                        
+                        <div class="special-offer-card">
+                            <div class="offer-badge">BOGO</div>
+                            <h4>Weekday Special</h4>
+                            <p>Buy 1 Get 1 Free on all waffles every Tuesday from 2-5 PM</p>
+                            <button class="btn primary-btn add-special-offer" data-id="weekday-special">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cart-preview">
+                    <h3>Your Order</h3>
+                    <div id="cart-preview-items">
+                        <!-- Cart preview items will be loaded dynamically -->
+                        <p class="empty-cart-message">Your cart is empty</p>
+                    </div>
+                    <div class="cart-preview-footer">
+                        <div class="total-row">
+                            <span>Total:</span>
+                            <span id="cart-preview-total">R0.00</span>
+                        </div>
+                        <a href="cart.html" class="btn primary-btn view-cart-btn">View Cart</a>
+                        <a href="checkout.html" class="btn primary-btn checkout-btn">Checkout</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Waffle Heaven</h3>
+                <p>11 Spitskop Street<br>White River, Mpumalanga<br>South Africa</p>
+                <p>Phone: 0822166658</p>
+                <p>Email: patrickjunior1010@gmail.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hours</h3>
+                <p>Monday - Thursday: 8:00 AM - 8:00 PM</p>
+                <p>Friday - Saturday: 8:00 AM - 10:00 PM</p>
+                <p>Sunday: 9:00 AM - 6:00 PM</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="reservations.html">Reservations</a></li>
+                    <li><a href="order-online.html">Order Online</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-media">
+                    <a href="#" class="social-icon">Facebook</a>
+                    <a href="#" class="social-icon">Instagram</a>
+                    <a href="#" class="social-icon">Twitter</a>
+                </div>
+                <div class="newsletter">
+                    <h4>Subscribe to our newsletter</h4>
+                    <form id="newsletter-form">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn primary-btn">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 Waffle Heaven. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

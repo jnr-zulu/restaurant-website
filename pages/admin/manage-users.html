@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users - Waffle Heaven</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <script src="../../js/main.js" defer></script>
+    <script src="../../js/admin.js" defer></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <h2>Waffle Heaven</h2>
+                <p>Admin Portal</p>
+            </div>
+            <div class="staff-info">
+                <img src="../../img/admin-avatar.png" alt="Admin Avatar" class="staff-avatar">
+                <p id="admin-name">Admin User</p>
+            </div>
+            <nav class="admin-nav">
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="manage-menu.html">Manage Menu</a></li>
+                    <li><a href="manage-orders.html">Manage Orders</a></li>
+                    <li><a href="manage-users.html" class="active">Manage Users</a></li>
+                    <li><a href="#" class="logout-btn">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="admin-header">
+                <h1>Manage Users</h1>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" id="user-search" placeholder="Search users...">
+                    </div>
+                    <div class="filter-container">
+                        <select id="role-filter">
+                            <option value="all">All Roles</option>
+                            <option value="customer">Customers</option>
+                            <option value="staff">Staff</option>
+                            <option value="admin">Admins</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-container">
+                <div class="user-management">
+                    <div class="user-list">
+                        <h2>User Accounts</h2>
+                        <div class="table-container">
+                            <table id="users-table" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Joined Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- This will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination">
+                            <button id="prev-page" class="btn secondary-btn">&laquo; Previous</button>
+                            <span id="page-info">Page 1 of 1</span>
+                            <button id="next-page" class="btn secondary-btn">Next &raquo;</button>
+                        </div>
+                    </div>
+                    
+                    <div class="add-user">
+                        <h2>Add New User</h2>
+                        <form id="add-user-form" class="admin-form">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" name="password" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="role">Role</label>
+                                <select id="role" name="role" required>
+                                    <option value="">Select a role</option>
+                                    <option value="customer">Customer</option>
+                                    <option value="staff">Staff</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn primary-btn">Add User</button>
+                                <button type="reset" class="btn secondary-btn">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="user-statistics">
+                    <h2>User Statistics</h2>
+                    <div class="stats-container">
+                        <div class="stat-box">
+                            <div class="stat-value" id="total-users">0</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="customer-count">0</div>
+                            <div class="stat-label">Customers</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="staff-count">0</div>
+                            <div class="stat-label">Staff</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="admin-count">0</div>
+                            <div class="stat-label">Admins</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="new-users-month">0</div>
+                            <div class="stat-label">New Users This Month</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit User</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-user-form" class="admin-form">
+                    <input type="hidden" id="edit-user-id" name="user-id">
+                    
+                    <div class="form-group">
+                        <label for="edit-username">Username</label>
+                        <input type="text" id="edit-username" name="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-email">Email</label>
+                        <input type="email" id="edit-email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-password">New Password (leave blank to keep current)</label>
+                        <input type="password" id="edit-password" name="password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-role">Role</label>
+                        <select id="edit-role" name="role" required>
+                            <option value="customer">Customer</option>
+                            <option value="staff">Staff</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn primary-btn">Save Changes</button>
+                        <button type="button" class="btn secondary-btn close-modal-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View User Details Modal -->
+    <div id="view-user-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>User Details</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="user-details">
+                    <div class="user-info-header">
+                        <div class="user-avatar-large">
+                            <img id="detail-user-avatar" src="../../img/user-avatar.png" alt="User Avatar">
+                        </div>
+                        <div class="user-info-main">
+                            <h3 id="detail-username">Username</h3>
+                            <span id="detail-role" class="user-role">Role</span>
+                            <p id="detail-joined-date">Joined: January 1, 2025</p>
+                        </div>
+                    </div>
+                    
+                    <div class="user-details-section">
+                        <h4>Contact Information</h4>
+                        <p><strong>Email:</strong> <span id="detail-email">user@example.com</span></p>
+                        <p><strong>Phone:</strong> <span id="detail-phone">Not provided</span></p>
+                        <p><strong>Address:</strong> <span id="detail-address">Not provided</span></p>
+                    </div>
+                    
+                    <div class="user-details-section">
+                        <h4>Account Activity</h4>
+                        <p><strong>Orders:</strong> <span id="detail-orders">0</span></p>
+                        <p><strong>Last Order:</strong> <span id="detail-last-order">Never</span></p>
+                        <p><strong>Last Login:</strong> <span id="detail-last-login">Never</span></p>
+                    </div>
+                    
+                    <div class="user-actions">
+                        <button id="edit-user-btn" class="btn primary-btn">Edit User</button>
+                        <button id="view-orders-btn" class="btn secondary-btn">View Orders</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sample users data for demonstration
+            const users = [
+                {
+                    id: 1,
+                    username: "admin",
+                    email: "admin@waffleheaven.com",
+                    role: "admin",
+                    joinedDate: "2024-12-15T10:00:00",
+                    phone: "0822166658",
+                    address: "11 Spitskop Street, White River, Mpumalanga",
+                    orders: 0,
+                    lastOrder: null,
+                    lastLogin: "2025-03-25T09:30:00"
+                },
+                {
+                    id: 2,
+                    username: "staff_user",
+                    email: "staff@waffleheaven.com",
+                    role: "staff",
+                    joinedDate: "2025-01-10T14:20:00",
+                    phone: "0822166659",
+                    address: "12 Maple Road, White River, Mpumalanga",
+                    orders: 0,
+                    lastOrder: null,
+                    lastLogin: "2025-03-24T16:45:00"
+                },
+                {
+                    id: 3,
+                    username: "john_doe",
+                    email: "john@example.com",
+                    role: "customer",
+                    joinedDate: "2025-01-15T09:45:00",
+                    phone: "0831234567",
+                    address: "123 Main St, White River, Mpumalanga",
+                    orders: 5,
+                    lastOrder: "2025-03-25T14:30:00",
+                    lastLogin: "2025-03-25T14:15:00"
+                },
+                {
+                    id: 4,
+                    username: "jane_smith",
+                    email: "jane@example.com",
+                    role: "customer",
+                    joinedDate: "2025-01-20T11:30:00",
+                    phone: "0847654321",
+                    address: "456 Oak Ave, White River, Mpumalanga",
+                    orders: 3,
+                    lastOrder: "2025-03-25T15:45:00",
+                    lastLogin: "2025-03-25T15:30:00"
+                },
+                {
+                    id: 5,
+                    username: "michael_johnson",
+                    email: "michael@example.com",
+                    role: "customer",
+                    joinedDate: "2025-02-05T16:20:00",
+                    phone: "0821234567",
+                    address: "789 Pine St, White River, Mpumalanga",
+                    orders: 2,
+                    lastOrder: "2025-03-25T16:15:00",
+                    lastLogin: "2025-03-25T16:00:00"
+                },
+                {
+                    id: 6,
+                    username: "sarah_williams",
+                    email: "sarah@example.com",
+                    role: "customer",
+                    joinedDate: "2025-02-15T10:10:00",
+                    phone: "0834567890",
+                    address: "321 Elm St, White River, Mpumalanga",
+                    orders: 1,
+                    lastOrder: "2025-03-25T16:45:00",
+                    lastLogin: "2025-03-25T16:30:00"
+                },
+                {
+                    id: 7,
+                    username: "robert_brown",
+                    email: "robert@example.com",
+                    role: "customer",
+                    joinedDate: "2025-03-01T13:45:00",
+                    phone: "0829876543",
+                    address: "654 Cedar Ave, White River, Mpumalanga",
+                    orders: 1,
+                    lastOrder: "2025-03-25T17:30:00",
+                    lastLogin: "2025-03-25T17:15:00"
+                },
+                {
+                    id: 8,
+                    username: "emily_davis",
+                    email: "emily@example.com",
+                    role: "customer",
+                    joinedDate: "2025-03-10T15:30:00",
+                    phone: "0836789012",
+                    address: "987 Birch Ln, White River, Mpumalanga",
+                    orders: 1,
+                    lastOrder: "2025-03-24T13:15:00",
+                    lastLogin: "2025-03-24T13:00:00"
+                }
+            ];
+
+            // Initialize page variables
+            let currentPage = 1;
+            const itemsPerPage = 10;
+            let filteredUsers = [...users];
+            
+            // Update user statistics
+            updateUserStatistics(users);
+            
+            // Load initial users
+            loadUsers(users, currentPage, itemsPerPage);
+            
+            // Setup role filter
+            const roleFilter = document.getElementById('role-filter');
+            if (roleFilter) {
+                roleFilter.addEventListener('change', function() {
+                    applyFilters();
+                });
+            }
+            
+            // Setup search functionality
+            const userSearch = document.getElementById('user-search');
+            if (userSearch) {
+                userSearch.addEventListener('input', function() {
+                    applyFilters();
+                });
+            }
+            
+            // Setup pagination
+            const prevPageBtn = document.getElementById('prev-page');
+            const nextPageBtn = document.getElementById('next-page');
+            
+            if (prevPageBtn) {
+                prevPageBtn.addEventListener('click', function() {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        loadUsers(filteredUsers, currentPage, itemsPerPage);
+                    }
+                });
+            }
+            
+            if (nextPageBtn) {
+                nextPageBtn.addEventListener('click', function() {
+                    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        loadUsers(filteredUsers, currentPage, itemsPerPage);
+                    }
+                });
+            }
+            
+            // Setup add user form submission
+            const addUserForm = document.getElementById('add-user-form');
+            if (addUserForm) {
+                addUserForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form data
+                    const formData = new FormData(this);
+                    
+                    // In a real app, this would send data to the server
+                    // For demo, we'll simulate adding to our array
+                    const newUser = {
+                        id: users.length + 1,
+                        username: formData.get('username'),
+                        email: formData.get('email'),
+                        role: formData.get('role'),
+                        joinedDate: new Date().toISOString(),
+                        phone: "",
+                        address: "",
+                        orders: 0,
+                        lastOrder: null,
+                        lastLogin: new Date().toISOString()
+                    };
+                    
+                    // Check if username or email already exists
+                    if (users.some(user => user.username === newUser.username)) {
+                        alert('Username already exists');
+                        return;
+                    }
+                    
+                    if (users.some(user => user.email === newUser.email)) {
+                        alert('Email already exists');
+                        return;
+                    }
+                    
+                    users.push(newUser);
+                    
+                    // Update statistics and reload table
+                    updateUserStatistics(users);
+                    applyFilters();
+                    
+                    alert('User added successfully');
+                    this.reset();
+                });
+            }
+            
+            // Setup modal close buttons
+            const closeModalButtons = document.querySelectorAll('.close-modal, .close-modal-btn');
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    document.getElementById('edit-user-modal').style.display = 'none';
+                    document.getElementById('view-user-modal').style.display = 'none';
+                });
+            });
+            
+            // Setup edit user form submission
+            const editUserForm = document.getElementById('edit-user-form');
+            if (editUserForm) {
+                editUserForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form data
+                    const formData = new FormData(this);
+                    const userId = formData.get('user-id');
+                    
+                    // Find the user in our array
+                    const userIndex = users.findIndex(user => user.id.toString() === userId);
+                    
+                    if (userIndex !== -1) {
+                        const newUsername = formData.get('username');
+                        const newEmail = formData.get('email');
+                        
+                        // Check if username already exists (excluding current user)
+                        if (newUsername !== users[userIndex].username && 
+                            users.some(user => user.username === newUsername)) {
+                            alert('Username already exists');
+                            return;
+                        }
+                        
+                        // Check if email already exists (excluding current user)
+                        if (newEmail !== users[userIndex].email && 
+                            users.some(user => user.email === newEmail)) {
+                            alert('Email already exists');
+                            return;
+                        }
+                        
+                        // Update user properties
+                        users[userIndex].username = newUsername;
+                        users[userIndex].email = newEmail;
+                        users[userIndex].role = formData.get('role');
+                        
+                        // Update password if provided
+                        if (formData.get('password')) {
+                            // In a real app, this would hash the password
+                            console.log('Password updated');
+                        }
+                        
+                        // Update statistics and reload table
+                        updateUserStatistics(users);
+                        applyFilters();
+                        
+                        alert('User updated successfully');
+                        document.getElementById('edit-user-modal').style.display = 'none';
+                    }
+                });
+            }
+            
+            function applyFilters() {
+                const roleValue = roleFilter.value;
+                const searchValue = userSearch.value.toLowerCase();
+                
+                // Reset to page 1 when filters change
+                currentPage = 1;
+                
+                // Apply filters
+                filteredUsers = users.filter(user => {
+                    // Role filter
+                    if (roleValue !== 'all' && user.role !== roleValue) {
+                        return false;
+                    }
+                    
+                    // Search filter
+                    if (searchValue) {
+                        const usernameMatch = user.username.toLowerCase().includes(searchValue);
+                        const emailMatch = user.email.toLowerCase().includes(searchValue);
+                        
+                        if (!usernameMatch && !emailMatch) {
+                            return false;
+                        }
+                    }
+                    
+                    return true;
+                });
+                
+                // Load filtered users
+                loadUsers(filteredUsers, currentPage, itemsPerPage);
+            }
+            
+            function updateUserStatistics(users) {
+                const totalUsers = users.length;
+                const customerCount = users.filter(user => user.role === 'customer').length;
+                const staffCount = users.filter(user => user.role === 'staff').length;
+                const adminCount = users.filter(user => user.role === 'admin').length;
+                
+                // Calculate new users this month
+                const today = new Date();
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                const newUsersMonth = users.filter(user => new Date(user.joinedDate) >= monthStart).length;
+                
+                document.getElementById('total-users').textContent = totalUsers;
+                document.getElementById('customer-count').textContent = customerCount;
+                document.getElementById('staff-count').textContent = staffCount;
+                document.getElementById('admin-count').textContent = adminCount;
+                document.getElementById('new-users-month').textContent = newUsersMonth;
+            }
+            
+            function loadUsers(users, page, limit) {
+                const tableBody = document.querySelector('#users-table tbody');
+                
+                if (!tableBody) return;
+                
+                tableBody.innerHTML = '';
+                
+                if (users.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="empty-table">No users found</td></tr>';
+                    updatePagination(0, 0, 0);
+                    return;
+                }
+                
+                // Calculate pagination
+                const startIndex = (page - 1) * limit;
+                const endIndex = Math.min(startIndex + limit, users.length);
+                const pageUsers = users.slice(startIndex, endIndex);
+                
+                // Update pagination info
+                updatePagination(page, Math.ceil(users.length / limit), users.length);
+                
+                // Generate table rows
+                pageUsers.forEach(user => {
+                    const joinedDate = new Date(user.joinedDate).toLocaleDateString('en-US');
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td><span class="user-role ${user.role}">${user.role}</span></td>
+                        <td>${joinedDate}</td>
+                        <td>
+                            <button class="action-btn view-btn" data-id="${user.id}">View</button>
+                            <button class="action-btn edit-btn" data-id="${user.id}">Edit</button>
+                            <button class="action-btn delete-btn" data-id="${user.id}" ${user.role === 'admin' ? 'disabled' : ''}>Delete</button>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                // Setup action buttons
+                const viewButtons = tableBody.querySelectorAll('.view-btn');
+                const editButtons = tableBody.querySelectorAll('.edit-btn');
+                const deleteButtons = tableBody.querySelectorAll('.delete-btn');
+                
+                viewButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const userId = this.getAttribute('data-id');
+                        viewUserDetails(userId);
+                    });
+                });
+                
+                editButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const userId = this.getAttribute('data-id');
+                        editUser(userId);
+                    });
+                });
+                
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        if (this.disabled) return;
+                        
+                        const userId = this.getAttribute('data-id');
+                        deleteUser(userId);
+                    });
+                });
+            }
+            
+            function updatePagination(currentPage, totalPages, totalItems) {
+                const pageInfo = document.getElementById('page-info');
+                const prevPageBtn = document.getElementById('prev-page');
+                const nextPageBtn = document.getElementById('next-page');
+                
+                if (pageInfo) {
+                    pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${totalItems} users)`;
+                }
+                
+                if (prevPageBtn) {
+                    prevPageBtn.disabled = currentPage <= 1;
+                }
+                
+                if (nextPageBtn) {
+                    nextPageBtn.disabled = currentPage >= totalPages;
+                }
+            }
+            
+            function viewUserDetails(userId) {
+                // Find user in our data
+                const user = users.find(user => user.id.toString() === userId);
+                
+                if (!user) return;
+                
+                // Update modal with user details
+                document.getElementById('detail-username').textContent = user.username;
+                
+                // Set role with appropriate class
+                const roleElement = document.getElementById('detail-role');
+                roleElement.textContent = user.role;
+                roleElement.className = 'user-role ' + user.role;
+                
+                // Format joined date
+                const joinedDate = new Date(user.joinedDate).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                document.getElementById('detail-joined-date').textContent = 'Joined: ' + joinedDate;
+                document.getElementById('detail-email').textContent = user.email;
+                document.getElementById('detail-phone').textContent = user.phone || 'Not provided';
+                document.getElementById('detail-address').textContent = user.address || 'Not provided';
+                document.getElementById('detail-orders').textContent = user.orders;
+                
+                // Format last order date if exists
+                if (user.lastOrder) {
+                    const lastOrderDate = new Date(user.lastOrder).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    document.getElementById('detail-last-order').textContent = lastOrderDate;
+                } else {
+                    document.getElementById('detail-last-order').textContent = 'Never';
+                }
+                
+                // Format last login date if exists
+                if (user.lastLogin) {
+                    const lastLoginDate = new Date(user.lastLogin).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric'
+                    });
+                    document.getElementById('detail-last-login').textContent = lastLoginDate;
+                } else {
+                    document.getElementById('detail-last-login').textContent = 'Never';
+                }
+                
+                // Setup action buttons
+                const editUserBtn = document.getElementById('edit-user-btn');
+                const viewOrdersBtn = document.getElementById('view-orders-btn');
+                
+                editUserBtn.addEventListener('click', function() {
+                    document.getElementById('view-user-modal').style.display = 'none';
+                    editUser(userId);
+                });
+                
+                viewOrdersBtn.addEventListener('click', function() {
+                    // In a real app, this would navigate to the orders page filtered by this user
+                    alert('Navigate to orders page filtered by user: ' + user.username);
+                });
+                
+                // Show modal
+                document.getElementById('view-user-modal').style.display = 'block';
+            }
+            
+            function editUser(userId) {
+                // Find user in our data
+                const user = users.find(user => user.id.toString() === userId);
+                
+                if (!user) return;
+                
+                // Populate edit form
+                document.getElementById('edit-user-id').value = user.id;
+                document.getElementById('edit-username').value = user.username;
+                document.getElementById('edit-email').value = user.email;
+                document.getElementById('edit-password').value = ''; // Don't populate password
+                document.getElementById('edit-role').value = user.role;
+                
+                // Show modal
+                document.getElementById('edit-user-modal').style.display = 'block';
+            }
+            
+            function deleteUser(userId) {
+                // Find user in our data
+                const user = users.find(user => user.id.toString() === userId);
+                
+                if (!user) return;
+                
+                // Don't allow deleting admin users
+                if (user.role === 'admin') {
+                    alert('Admin users cannot be deleted');
+                    return;
+                }
+                
+                // Confirm deletion
+                if (confirm(`Are you sure you want to delete user "${user.username}"?`)) {
+                    // In a real app, this would send a delete request to the server
+                    // For demo, we'll remove from our array
+                    const userIndex = users.findIndex(u => u.id.toString() === userId);
+                    
+                    if (userIndex !== -1) {
+                        users.splice(userIndex, 1);
+                        
+                        // Update statistics and reload table
+                        updateUserStatistics(users);
+                        applyFilters();
+                        
+                        alert('User deleted successfully');
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

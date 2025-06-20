@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Waffle Heaven</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <script src="../../js/main.js" defer></script>
+    <script src="../../js/admin.js" defer></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <h2>Waffle Heaven</h2>
+                <p>Admin Portal</p>
+            </div>
+            <div class="staff-info">
+                <img src="../../img/admin-avatar.png" alt="Admin Avatar" class="staff-avatar">
+                <p id="admin-name">Admin User</p>
+            </div>
+            <nav class="admin-nav">
+                <ul>
+                    <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                    <li><a href="manage-menu.html">Manage Menu</a></li>
+                    <li><a href="manage-orders.html">Manage Orders</a></li>
+                    <li><a href="manage-users.html">Manage Users</a></li>
+                    <li><a href="#" class="logout-btn">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="admin-header">
+                <h1>Admin Dashboard</h1>
+                <div class="header-actions">
+                    <div class="date-display">
+                        <span id="current-date">March 25, 2025</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="orders-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-orders">0</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="pending-orders">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="completed-orders">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="cancelled-orders">0</div>
+                    <div class="stat-label">Cancelled</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-revenue">$0.00</div>
+                    <div class="stat-label">Revenue</div>
+                </div>
+            </div>
+
+            <div class="dashboard-widgets">
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>Revenue Overview</h3>
+                        <select id="revenue-period">
+                            <option value="week">Last 7 Days</option>
+                            <option value="month">This Month</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+                    <div class="widget-content" id="revenue-chart">
+                        <!-- Revenue chart will be rendered here -->
+                        <div class="chart-placeholder">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Mar 19, 2025</td>
+                                        <td>R380.95</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mar 20, 2025</td>
+                                        <td>R420.50</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mar 21, 2025</td>
+                                        <td>R510.75</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mar 22, 2025</td>
+                                        <td>R680.25</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mar 23, 2025</td>
+                                        <td>R450.10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mar 24, 2025</td>
+                                        <td>R385.60</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mar 25, 2025</td>
+                                        <td>R445.90</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>Popular Items</h3>
+                    </div>
+                    <div class="widget-content" id="popular-items">
+                        <!-- Popular items list will be displayed here -->
+                        <ul class="popular-items-list">
+                            <li>
+                                <span class="item-name">Chicken & Waffles</span>
+                                <span class="item-quantity">45 sold</span>
+                            </li>
+                            <li>
+                                <span class="item-name">Chocolate Dream</span>
+                                <span class="item-quantity">38 sold</span>
+                            </li>
+                            <li>
+                                <span class="item-name">Classic Maple</span>
+                                <span class="item-quantity">32 sold</span>
+                            </li>
+                            <li>
+                                <span class="item-name">Banana Nutella</span>
+                                <span class="item-quantity">27 sold</span>
+                            </li>
+                            <li>
+                                <span class="item-name">Coffee</span>
+                                <span class="item-quantity">24 sold</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-container">
+                <h2>Recent Orders</h2>
+                <div class="table-container">
+                    <table id="recent-orders-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- This will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date
+            const currentDate = new Date();
+            document.getElementById('current-date').textContent = currentDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Sample data for demonstration
+            const sampleOrders = [
+                {
+                    id: 1001,
+                    customer: "John Doe",
+                    total: 145.97,
+                    status: "delivered",
+                    date: "2025-03-25T14:30:00"
+                },
+                {
+                    id: 1002,
+                    customer: "Jane Smith",
+                    total: 96.98,
+                    status: "preparing",
+                    date: "2025-03-25T15:45:00"
+                },
+                {
+                    id: 1003,
+                    customer: "Michael Johnson",
+                    total: 220.99,
+                    status: "pending",
+                    date: "2025-03-25T16:15:00"
+                },
+                {
+                    id: 1004,
+                    customer: "Sarah Williams",
+                    total: 85.99,
+                    status: "confirmed",
+                    date: "2025-03-25T16:45:00"
+                },
+                {
+                    id: 1005,
+                    customer: "Robert Brown",
+                    total: 120.50,
+                    status: "cancelled",
+                    date: "2025-03-25T17:30:00"
+                }
+            ];
+
+            // Initialize dashboard data
+            updateOrderStatistics(sampleOrders);
+            loadRecentOrders(sampleOrders);
+
+            // Set up revenue period selector
+            const revenuePeriodSelect = document.getElementById('revenue-period');
+            if (revenuePeriodSelect) {
+                revenuePeriodSelect.addEventListener('change', function() {
+                    // In a real app, this would update the revenue chart
+                    console.log('Revenue period changed to:', this.value);
+                });
+            }
+        });
+
+        function updateOrderStatistics(orders) {
+            // Calculate statistics
+            const totalOrders = orders.length;
+            const pendingOrders = orders.filter(order => order.status === "pending").length;
+            const completedOrders = orders.filter(order => order.status === "delivered").length;
+            const cancelledOrders = orders.filter(order => order.status === "cancelled").length;
+            
+            // Calculate total revenue
+            const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+            
+            // Update statistics widgets
+            document.getElementById('total-orders').textContent = totalOrders;
+            document.getElementById('pending-orders').textContent = pendingOrders;
+            document.getElementById('completed-orders').textContent = completedOrders;
+            document.getElementById('cancelled-orders').textContent = cancelledOrders;
+            document.getElementById('total-revenue').textContent = `R${totalRevenue.toFixed(2)}`;
+        }
+
+        function loadRecentOrders(orders) {
+            const tableBody = document.querySelector('#recent-orders-table tbody');
+            
+            if (!tableBody) return;
+            
+            tableBody.innerHTML = '';
+            
+            // Sort by date (newest first)
+            orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Get latest 5 orders
+            const recentOrders = orders.slice(0, 5);
+            
+            recentOrders.forEach(order => {
+                const date = new Date(order.date).toLocaleDateString('en-US');
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>#${order.id}</td>
+                    <td>${order.customer}</td>
+                    <td>R${order.total.toFixed(2)}</td>
+                    <td><span class="status ${order.status}">${order.status}</span></td>
+                    <td>${date}</td>
+                    <td>
+                        <button class="action-btn view-btn" data-id="${order.id}">View</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to view buttons
+            const viewButtons = tableBody.querySelectorAll('.view-btn');
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-id');
+                    // In a real app, this would show order details
+                    window.location.href = `manage-orders.html?id=${orderId}`;
+                });
+            });
+        }
+    </script>
+</body>
+</html>

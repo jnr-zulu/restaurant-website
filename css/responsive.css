@@ -1,0 +1,129 @@
+/* Mobile - Small (up to 576px) */
+@media screen and (max-width: 576px) {
+    .hero h2 {
+        font-size: 32px;
+    }
+    
+    .hero p {
+        font-size: 16px;
+    }
+    
+    .section-title {
+        font-size: 26px;
+    }
+    
+    .category-card {
+        min-width: 100%;
+    }
+    
+    .menu-item {
+        grid-template-columns: 1fr;
+    }
+    
+    .menu-item-img {
+        height: 180px;
+    }
+    
+    .nav-links {
+        width: 70%;
+    }
+}
+
+/* Mobile - Medium (576px - 768px) */
+@media screen and (min-width: 577px) and (max-width: 768px) {
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .offers-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .cart-item {
+        grid-template-columns: 80px 1fr auto;
+    }
+}
+
+/* Tablet (768px - 992px) */
+@media screen and (min-width: 769px) and (max-width: 992px) {
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .footer-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Desktop - Small (992px - 1200px) */
+@media screen and (min-width: 993px) and (max-width: 1200px) {
+    .category-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Desktop - Large (1200px and above) */
+@media screen and (min-width: 1201px) {
+    .container {
+        max-width: 1140px;
+        margin: 0 auto;
+    }
+    
+    .hero-content, 
+    .cta-content {
+        max-width: 800px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    header, 
+    footer, 
+    .hero, 
+    .cta,
+    .social-media,
+    .newsletter,
+    .btn {
+        display: none !important;
+    }
+    
+    body {
+        font-size: 12pt;
+        line-height: 1.5;
+        color: #000;
+        background: #fff;
+    }
+    
+    main {
+        width: 100%;
+    }
+    
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+    
+    img {
+        max-width: 100% !important;
+    }
+    
+    .menu-item, 
+    .cart-item {
+        page-break-inside: avoid;
+    }
+    
+    .order-summary {
+        page-break-before: always;
+    }
+}

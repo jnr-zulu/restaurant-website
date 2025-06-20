@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Orders - Waffle Heaven</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <script src="../../js/main.js" defer></script>
+    <script src="../../js/admin.js" defer></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <h2>Waffle Heaven</h2>
+                <p>Staff Portal</p>
+            </div>
+            <div class="staff-info">
+                <img src="../../img/staff-avatar.png" alt="Staff Avatar" class="staff-avatar">
+                <p id="staff-name">Staff User</p>
+            </div>
+            <nav class="admin-nav">
+                <ul>
+                    <li><a href="orders.html" class="active">View Orders</a></li>
+                    <li><a href="update-status.html">Update Status</a></li>
+                    <li><a href="#" class="logout-btn">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="admin-header">
+                <h1>Current Orders</h1>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" id="order-search" placeholder="Search orders...">
+                    </div>
+                    <div class="filter-container">
+                        <select id="status-filter">
+                            <option value="all">All Orders</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="preparing">Preparing</option>
+                            <option value="ready">Ready</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-container">
+                <div class="orders-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="pending-orders">0</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="preparing-orders">0</div>
+                        <div class="stat-label">Preparing</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="ready-orders">0</div>
+                        <div class="stat-label">Ready</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="today-orders">0</div>
+                        <div class="stat-label">Today's Orders</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="orders-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Customer</th>
+                                <th>Order Type</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- This will be populated by JavaScript -->
+                            <tr>
+                                <td colspan="7" class="empty-table">Loading orders...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Modal (hidden by default) -->
+    <div id="order-details-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Details #<span id="detail-order-id"></span></h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="order-details">
+                    <div class="order-info">
+                        <p><strong>Date:</strong> <span id="detail-date"></span></p>
+                        <p><strong>Status:</strong> <span id="detail-status" class="status"></span></p>
+                        <p><strong>Order Type:</strong> <span id="detail-type"></span></p>
+                    </div>
+                    
+                    <div class="customer-info">
+                        <h3>Customer Information</h3>
+                        <p><strong>Name:</strong> <span id="detail-customer-name"></span></p>
+                        <p><strong>Email:</strong> <span id="detail-customer-email"></span></p>
+                        <p><strong>Phone:</strong> <span id="detail-customer-phone"></span></p>
+                        <div id="detail-address-section">
+                            <p><strong>Delivery Address:</strong> <span id="detail-customer-address"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="order-items-details">
+                        <h3>Items</h3>
+                        <div id="detail-items">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="order-price-summary">
+                        <div class="price-row">
+                            <span>Subtotal</span>
+                            <span id="detail-subtotal"></span>
+                        </div>
+                        <div class="price-row">
+                            <span>Tax</span>
+                            <span id="detail-tax"></span>
+                        </div>
+                        <div class="price-row total">
+                            <span>Total</span>
+                            <span id="detail-total"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="order-actions">
+                        <button class="btn primary-btn update-status-btn" id="update-status-btn">Update Status</button>
+                        <button class="btn secondary-btn print-order-btn" id="print-order-btn">Print Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for demonstration purposes
+        const sampleOrders = [
+            {
+                id: 1001,
+                customer: {
+                    name: "John Doe",
+                    email: "john@example.com",
+                    phone: "0831234567",
+                    address: "123 Main St, White River, Mpumalanga"
+                },
+                orderType: "delivery",
+                total: 145.97,
+                subtotal: 126.93,
+                tax: 19.04,
+                status: "pending",
+                date: "2025-03-25T14:30:00",
+                items: [
+                    { name: "Classic Maple", quantity: 1, price: 45.99 },
+                    { name: "Chicken & Waffles", quantity: 1, price: 75.99 },
+                    { name: "Fresh Juice", quantity: 1, price: 25.99 }
+                ]
+            },
+            {
+                id: 1002,
+                customer: {
+                    name: "Jane Smith",
+                    email: "jane@example.com",
+                    phone: "0847654321",
+                    address: ""
+                },
+                orderType: "pickup",
+                total: 96.98,
+                subtotal: 84.33,
+                tax: 12.65,
+                status: "preparing",
+                date: "2025-03-25T15:45:00",
+                items: [
+                    { name: "Chocolate Dream", quantity: 1, price: 55.99 },
+                    { name: "Coffee", quantity: 2, price: 22.99 }
+                ]
+            },
+            {
+                id: 1003,
+                customer: {
+                    name: "Michael Johnson",
+                    email: "michael@example.com",
+                    phone: "0821234567",
+                    address: "456 Oak Ave, White River, Mpumalanga"
+                },
+                orderType: "delivery",
+                total: 220.99,
+                subtotal: 192.17,
+                tax: 28.82,
+                status: "ready",
+                date: "2025-03-25T16:15:00",
+                items: [
+                    { name: "Family Feast", quantity: 1, price: 220.99 }
+                ]
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load and display orders
+            displayOrders(sampleOrders);
+            updateOrderStats(sampleOrders);
+            
+            // Setup status filter
+            const statusFilter = document.getElementById('status-filter');
+            if (statusFilter) {
+                statusFilter.addEventListener('change', function() {
+                    const filteredOrders = filterOrders(sampleOrders, this.value);
+                    displayOrders(filteredOrders);
+                });
+            }
+            
+            // Setup search functionality
+            const orderSearch = document.getElementById('order-search');
+            if (orderSearch) {
+                orderSearch.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const filteredOrders = sampleOrders.filter(order => 
+                        order.id.toString().includes(searchTerm) ||
+                        order.customer.name.toLowerCase().includes(searchTerm) ||
+                        order.customer.email.toLowerCase().includes(searchTerm)
+                    );
+                    displayOrders(filteredOrders);
+                });
+            }
+            
+            // Setup modal close functionality
+            const closeModalBtn = document.querySelector('.close-modal');
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', function() {
+                    document.getElementById('order-details-modal').style.display = 'none';
+                });
+            }
+            
+            // Setup print functionality
+            const printOrderBtn = document.getElementById('print-order-btn');
+            if (printOrderBtn) {
+                printOrderBtn.addEventListener('click', function() {
+                    alert('Printing order...');
+                    // In a real app, this would open a print dialog
+                });
+            }
+            
+            // Setup update status button
+            const updateStatusBtn = document.getElementById('update-status-btn');
+            if (updateStatusBtn) {
+                updateStatusBtn.addEventListener('click', function() {
+                    const orderId = document.getElementById('detail-order-id').textContent;
+                    window.location.href = `update-status.html?id=${orderId}`;
+                });
+            }
+        });
+        
+        function displayOrders(orders) {
+            const tableBody = document.querySelector('#orders-table tbody');
+            
+            if (!tableBody) return;
+            
+            tableBody.innerHTML = '';
+            
+            if (orders.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="7" class="empty-table">No orders found</td></tr>';
+                return;
+            }
+            
+            orders.forEach(order => {
+                const row = document.createElement('tr');
+                
+                // Format date and time
+                const orderDate = new Date(order.date);
+                const formattedTime = orderDate.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: true
+                });
+                
+                row.innerHTML = `
+                    <td>#${order.id}</td>
+                    <td>${order.customer.name}</td>
+                    <td>${order.orderType}</td>
+                    <td>R${order.total.toFixed(2)}</td>
+                    <td><span class="status ${order.status}">${order.status}</span></td>
+                    <td>${formattedTime}</td>
+                    <td>
+                        <button class="action-btn view-btn" data-id="${order.id}">View</button>
+                        <button class="action-btn update-btn" data-id="${order.id}">Update</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Setup view buttons
+            const viewButtons = document.querySelectorAll('.view-btn');
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-id');
+                    viewOrderDetails(orderId);
+                });
+            });
+            
+            // Setup update buttons
+            const updateButtons = document.querySelectorAll('.update-btn');
+            updateButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-id');
+                    window.location.href = `update-status.html?id=${orderId}`;
+                });
+            });
+        }
+        
+        function filterOrders(orders, statusFilter) {
+            if (statusFilter === 'all') {
+                return orders;
+            }
+            
+            return orders.filter(order => order.status === statusFilter);
+        }
+        
+        function updateOrderStats(orders) {
+            const pendingOrders = orders.filter(order => order.status === 'pending').length;
+            const preparingOrders = orders.filter(order => order.status === 'preparing').length;
+            const readyOrders = orders.filter(order => order.status === 'ready').length;
+            
+            // Calculate today's orders
+            const today = new Date().toLocaleDateString('en-US');
+            const todayOrders = orders.filter(order => {
+                const orderDate = new Date(order.date).toLocaleDateString('en-US');
+                return orderDate === today;
+            }).length;
+            
+            document.getElementById('pending-orders').textContent = pendingOrders;
+            document.getElementById('preparing-orders').textContent = preparingOrders;
+            document.getElementById('ready-orders').textContent = readyOrders;
+            document.getElementById('today-orders').textContent = todayOrders;
+        }
+        
+        function viewOrderDetails(orderId) {
+            // Find order in sample data
+            const order = sampleOrders.find(order => order.id.toString() === orderId);
+            
+            if (!order) return;
+            
+            // Update modal with order details
+            document.getElementById('detail-order-id').textContent = order.id;
+            
+            // Format date
+            const orderDate = new Date(order.date);
+            const formattedDate = orderDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            });
+            document.getElementById('detail-date').textContent = formattedDate;
+            
+            // Update status
+            const statusElement = document.getElementById('detail-status');
+            statusElement.textContent = order.status;
+            statusElement.className = 'status ' + order.status;
+            
+            // Update order type
+            document.getElementById('detail-type').textContent = order.orderType;
+            
+            // Update customer info
+            document.getElementById('detail-customer-name').textContent = order.customer.name;
+            document.getElementById('detail-customer-email').textContent = order.customer.email;
+            document.getElementById('detail-customer-phone').textContent = order.customer.phone;
+            
+            // Show/hide address section based on order type
+            const addressSection = document.getElementById('detail-address-section');
+            if (order.orderType === 'delivery' && order.customer.address) {
+                addressSection.style.display = 'block';
+                document.getElementById('detail-customer-address').textContent = order.customer.address;
+            } else {
+                addressSection.style.display = 'none';
+            }
+            
+            // Update items
+            const itemsContainer = document.getElementById('detail-items');
+            itemsContainer.innerHTML = '';
+            
+            order.items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'order-detail-item';
+                itemElement.innerHTML = `
+                    <div class="item-name">${item.quantity}x ${item.name}</div>
+                    <div class="item-price">R${(item.price * item.quantity).toFixed(2)}</div>
+                `;
+                itemsContainer.appendChild(itemElement);
+            });
+            
+            // Update price summary
+            document.getElementById('detail-subtotal').textContent = `R${order.subtotal.toFixed(2)}`;
+            document.getElementById('detail-tax').textContent = `R${order.tax.toFixed(2)}`;
+            document.getElementById('detail-total').textContent = `R${order.total.toFixed(2)}`;
+            
+            // Show modal
+            document.getElementById('order-details-modal').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

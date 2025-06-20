@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders - Waffle Heaven</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <script src="../../js/main.js" defer></script>
+    <script src="../../js/admin.js" defer></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <h2>Waffle Heaven</h2>
+                <p>Admin Portal</p>
+            </div>
+            <div class="staff-info">
+                <img src="../../img/admin-avatar.png" alt="Admin Avatar" class="staff-avatar">
+                <p id="admin-name">Admin User</p>
+            </div>
+            <nav class="admin-nav">
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="manage-menu.html">Manage Menu</a></li>
+                    <li><a href="manage-orders.html" class="active">Manage Orders</a></li>
+                    <li><a href="manage-users.html">Manage Users</a></li>
+                    <li><a href="#" class="logout-btn">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="admin-header">
+                <h1>Manage Orders</h1>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" id="order-search" placeholder="Search orders...">
+                    </div>
+                    <div class="filter-container">
+                        <select id="status-filter">
+                            <option value="all">All Orders</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="preparing">Preparing</option>
+                            <option value="ready">Ready</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="filter-container">
+                        <select id="date-filter">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+
+            <div class="orders-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-orders">0</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="pending-orders">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="preparing-orders">0</div>
+                    <div class="stat-label">Preparing</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="ready-orders">0</div>
+                    <div class="stat-label">Ready</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-revenue">R0.00</div>
+                    <div class="stat-label">Revenue</div>
+                </div>
+            </div>
+
+            <div class="content-container">
+                <div class="table-container">
+                    <table id="orders-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Customer</th>
+                                <th>Order Type</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date & Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- This will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination">
+                    <button id="prev-page" class="btn secondary-btn">&laquo; Previous</button>
+                    <span id="page-info">Page 1 of 1</span>
+                    <button id="next-page" class="btn secondary-btn">Next &raquo;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="order-details-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Details #<span id="detail-order-id"></span></h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="order-details">
+                    <div class="order-info">
+                        <p><strong>Date:</strong> <span id="detail-date"></span></p>
+                        <p><strong>Status:</strong> <span id="detail-status" class="status"></span></p>
+                        <p><strong>Order Type:</strong> <span id="detail-type"></span></p>
+                    </div>
+                    
+                    <div class="customer-info">
+                        <h3>Customer Information</h3>
+                        <p><strong>Name:</strong> <span id="detail-customer-name"></span></p>
+                        <p><strong>Email:</strong> <span id="detail-customer-email"></span></p>
+                        <p><strong>Phone:</strong> <span id="detail-customer-phone"></span></p>
+                        <div id="detail-address-section">
+                            <p><strong>Delivery Address:</strong> <span id="detail-customer-address"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="order-items-details">
+                        <h3>Items</h3>
+                        <div id="detail-items">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="order-price-summary">
+                        <div class="price-row">
+                            <span>Subtotal</span>
+                            <span id="detail-subtotal"></span>
+                        </div>
+                        <div class="price-row">
+                            <span>Tax</span>
+                            <span id="detail-tax"></span>
+                        </div>
+                        <div class="price-row total">
+                            <span>Total</span>
+                            <span id="detail-total"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="order-actions">
+                        <button class="btn primary-btn update-status-btn" id="update-status-btn">Update Status</button>
+                        <button class="btn secondary-btn print-order-btn" id="print-order-btn">Print Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div id="update-status-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Update Order Status #<span id="status-order-id"></span></h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="update-status-form" class="admin-form">
+                    <div class="form-group">
+                        <label for="new-status">New Status</label>
+                        <select id="new-status" name="status" required>
+                            <option value="">Select new status</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="preparing">Preparing</option>
+                            <option value="ready">Ready for Pickup/Delivery</option>
+                            <option value="delivered">Delivered/Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="status-notes">Notes (Optional)</label>
+                        <textarea id="status-notes" name="notes" rows="3" placeholder="Add any notes about this status update"></textarea>
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="notify-customer" name="notify-customer" checked>
+                            Send notification to customer
+                        </label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn primary-btn">Update Status</button>
+                        <button type="button" class="btn secondary-btn close-modal-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sample orders data for demonstration
+            const orders = [
+                {
+                    id: 1001,
+                    customer: {
+                        name: "John Doe",
+                        email: "john@example.com",
+                        phone: "0831234567",
+                        address: "123 Main St, White River, Mpumalanga"
+                    },
+                    orderType: "delivery",
+                    total: 145.97,
+                    subtotal: 126.93,
+                    tax: 19.04,
+                    status: "pending",
+                    date: "2025-03-25T14:30:00",
+                    items: [
+                        { name: "Classic Maple", quantity: 1, price: 45.99 },
+                        { name: "Chicken & Waffles", quantity: 1, price: 75.99 },
+                        { name: "Fresh Juice", quantity: 1, price: 25.99 }
+                    ]
+                },
+                {
+                    id: 1002,
+                    customer: {
+                        name: "Jane Smith",
+                        email: "jane@example.com",
+                        phone: "0847654321",
+                        address: ""
+                    },
+                    orderType: "pickup",
+                    total: 96.98,
+                    subtotal: 84.33,
+                    tax: 12.65,
+                    status: "preparing",
+                    date: "2025-03-25T15:45:00",
+                    items: [
+                        { name: "Chocolate Dream", quantity: 1, price: 55.99 },
+                        { name: "Coffee", quantity: 2, price: 22.99 }
+                    ]
+                },
+                {
+                    id: 1003,
+                    customer: {
+                        name: "Michael Johnson",
+                        email: "michael@example.com",
+                        phone: "0821234567",
+                        address: "456 Oak Ave, White River, Mpumalanga"
+                    },
+                    orderType: "delivery",
+                    total: 220.99,
+                    subtotal: 192.17,
+                    tax: 28.82,
+                    status: "ready",
+                    date: "2025-03-25T16:15:00",
+                    items: [
+                        { name: "Family Feast", quantity: 1, price: 220.99 }
+                    ]
+                },
+                {
+                    id: 1004,
+                    customer: {
+                        name: "Sarah Williams",
+                        email: "sarah@example.com",
+                        phone: "0834567890",
+                        address: ""
+                    },
+                    orderType: "pickup",
+                    total: 85.99,
+                    subtotal: 74.77,
+                    tax: 11.22,
+                    status: "confirmed",
+                    date: "2025-03-25T16:45:00",
+                    items: [
+                        { name: "Savory Brunch", quantity: 1, price: 85.99 }
+                    ]
+                },
+                {
+                    id: 1005,
+                    customer: {
+                        name: "Robert Brown",
+                        email: "robert@example.com",
+                        phone: "0829876543",
+                        address: "789 Pine St, White River, Mpumalanga"
+                    },
+                    orderType: "delivery",
+                    total: 120.50,
+                    subtotal: 104.78,
+                    tax: 15.72,
+                    status: "cancelled",
+                    date: "2025-03-25T17:30:00",
+                    items: [
+                        { name: "Avocado & Feta", quantity: 1, price: 70.99 },
+                        { name: "Fresh Juice", quantity: 1, price: 25.99 },
+                        { name: "Coffee", quantity: 1, price: 22.99 }
+                    ]
+                },
+                {
+                    id: 1006,
+                    customer: {
+                        name: "Emily Davis",
+                        email: "emily@example.com",
+                        phone: "0836789012",
+                        address: "321 Elm St, White River, Mpumalanga"
+                    },
+                    orderType: "delivery",
+                    total: 160.97,
+                    subtotal: 140.0,
+                    tax: 20.97,
+                    status: "delivered",
+                    date: "2025-03-24T13:15:00",
+                    items: [
+                        { name: "Bacon & Egg", quantity: 1, price: 65.99 },
+                        { name: "Berry Bliss", quantity: 1, price: 60.99 },
+                        { name: "Coffee", quantity: 1, price: 22.99 },
+                        { name: "Fresh Juice", quantity: 1, price: 25.99 }
+                    ]
+                }
+            ];
+
+            // Initialize page variables
+            let currentPage = 1;
+            const itemsPerPage = 10;
+            let filteredOrders = [...orders];
+            
+            // Initialize order statistics
+            updateOrderStatistics(orders);
+            
+            // Load initial orders
+            loadOrders(orders, currentPage, itemsPerPage);
+            
+            // Setup status filter
+            const statusFilter = document.getElementById('status-filter');
+            if (statusFilter) {
+                statusFilter.addEventListener('change', function() {
+                    applyFilters();
+                });
+            }
+            
+            // Setup date filter
+            const dateFilter = document.getElementById('date-filter');
+            if (dateFilter) {
+                dateFilter.addEventListener('change', function() {
+                    applyFilters();
+                });
+            }
+            
+            // Setup search functionality
+            const orderSearch = document.getElementById('order-search');
+            if (orderSearch) {
+                orderSearch.addEventListener('input', function() {
+                    applyFilters();
+                });
+            }
+            
+            // Setup pagination
+            const prevPageBtn = document.getElementById('prev-page');
+            const nextPageBtn = document.getElementById('next-page');
+            
+            if (prevPageBtn) {
+                prevPageBtn.addEventListener('click', function() {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        loadOrders(filteredOrders, currentPage, itemsPerPage);
+                    }
+                });
+            }
+            
+            if (nextPageBtn) {
+                nextPageBtn.addEventListener('click', function() {
+                    const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        loadOrders(filteredOrders, currentPage, itemsPerPage);
+                    }
+                });
+            }
+            
+            // Setup modal close buttons
+            const closeModalButtons = document.querySelectorAll('.close-modal, .close-modal-btn');
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    document.getElementById('order-details-modal').style.display = 'none';
+                    document.getElementById('update-status-modal').style.display = 'none';
+                });
+            });
+            
+            // Setup print order button
+            const printOrderBtn = document.getElementById('print-order-btn');
+            if (printOrderBtn) {
+                printOrderBtn.addEventListener('click', function() {
+                    window.print();
+                });
+            }
+            
+            // Setup update status button in order details modal
+            const updateStatusBtn = document.getElementById('update-status-btn');
+            if (updateStatusBtn) {
+                updateStatusBtn.addEventListener('click', function() {
+                    const orderId = document.getElementById('detail-order-id').textContent;
+                    document.getElementById('order-details-modal').style.display = 'none';
+                    openUpdateStatusModal(orderId);
+                });
+            }
+            
+            // Setup update status form submission
+            const updateStatusForm = document.getElementById('update-status-form');
+            if (updateStatusForm) {
+                updateStatusForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const orderId = document.getElementById('status-order-id').textContent;
+                    const newStatus = document.getElementById('new-status').value;
+                    const notes = document.getElementById('status-notes').value;
+                    const notifyCustomer = document.getElementById('notify-customer').checked;
+                    
+                    // Find order in our data
+                    const orderIndex = orders.findIndex(order => order.id.toString() === orderId);
+                    
+                    if (orderIndex !== -1) {
+                        // Update order status
+                        orders[orderIndex].status = newStatus;
+                        
+                        // In a real app, this would send data to the server
+                        alert(`Order #${orderId} status updated to ${newStatus}`);
+                        
+                        // Close modal
+                        document.getElementById('update-status-modal').style.display = 'none';
+                        
+                        // Reload orders
+                        applyFilters();
+                    }
+                });
+            }
+            
+            function applyFilters() {
+                const statusValue = statusFilter.value;
+                const dateValue = dateFilter.value;
+                const searchValue = orderSearch.value.toLowerCase();
+                
+                // Reset to page 1 when filters change
+                currentPage = 1;
+                
+                // Apply filters
+                filteredOrders = orders.filter(order => {
+                    // Status filter
+                    if (statusValue !== 'all' && order.status !== statusValue) {
+                        return false;
+                    }
+                    
+                    // Date filter
+                    if (dateValue !== 'all') {
+                        const orderDate = new Date(order.date);
+                        const today = new Date();
+                        
+                        if (dateValue === 'today') {
+                            if (orderDate.toDateString() !== today.toDateString()) {
+                                return false;
+                            }
+                        } else if (dateValue === 'week') {
+                            const weekStart = new Date(today);
+                            weekStart.setDate(today.getDate() - today.getDay());
+                            
+                            if (orderDate < weekStart) {
+                                return false;
+                            }
+                        } else if (dateValue === 'month') {
+                            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                            
+                            if (orderDate < monthStart) {
+                                return false;
+                            }
+                        }
+                    }
+                    
+                    // Search filter
+                    if (searchValue) {
+                        const orderIdMatch = order.id.toString().includes(searchValue);
+                        const customerNameMatch = order.customer.name.toLowerCase().includes(searchValue);
+                        const customerEmailMatch = order.customer.email.toLowerCase().includes(searchValue);
+                        const orderTypeMatch = order.orderType.toLowerCase().includes(searchValue);
+                        
+                        if (!orderIdMatch && !customerNameMatch && !customerEmailMatch && !orderTypeMatch) {
+                            return false;
+                        }
+                    }
+                    
+                    return true;
+                });
+                
+                // Update order statistics for filtered orders
+                updateOrderStatistics(filteredOrders);
+                
+                // Load filtered orders
+                loadOrders(filteredOrders, currentPage, itemsPerPage);
+            }
+            
+            function updateOrderStatistics(orders) {
+                const totalOrders = orders.length;
+                const pendingOrders = orders.filter(order => order.status === 'pending').length;
+                const preparingOrders = orders.filter(order => order.status === 'preparing').length;
+                const readyOrders = orders.filter(order => order.status === 'ready').length;
+                const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+                
+                document.getElementById('total-orders').textContent = totalOrders;
+                document.getElementById('pending-orders').textContent = pendingOrders;
+                document.getElementById('preparing-orders').textContent = preparingOrders;
+                document.getElementById('ready-orders').textContent = readyOrders;
+                document.getElementById('total-revenue').textContent = `R${totalRevenue.toFixed(2)}`;
+            }
+            
+            function loadOrders(orders, page, limit) {
+                const tableBody = document.querySelector('#orders-table tbody');
+                
+                if (!tableBody) return;
+                
+                tableBody.innerHTML = '';
+                
+                if (orders.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="7" class="empty-table">No orders found</td></tr>';
+                    updatePagination(0, 0, 0);
+                    return;
+                }
+                
+                // Calculate pagination
+                const startIndex = (page - 1) * limit;
+                const endIndex = Math.min(startIndex + limit, orders.length);
+                const pageOrders = orders.slice(startIndex, endIndex);
+                
+                // Update pagination info
+                updatePagination(page, Math.ceil(orders.length / limit), orders.length);
+                
+                // Generate table rows
+                pageOrders.forEach(order => {
+                    const dateObj = new Date(order.date);
+                    const formattedDate = dateObj.toLocaleDateString('en-US');
+                    const formattedTime = dateObj.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        hour12: true
+                    });
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>#${order.id}</td>
+                        <td>${order.customer.name}</td>
+                        <td>${order.orderType}</td>
+                        <td>R${order.total.toFixed(2)}</td>
+                        <td><span class="status ${order.status}">${order.status}</span></td>
+                        <td>${formattedDate}<br>${formattedTime}</td>
+                        <td>
+                            <button class="action-btn view-btn" data-id="${order.id}">View</button>
+                            <button class="action-btn update-btn" data-id="${order.id}">Update</button>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                // Setup action buttons
+                const viewButtons = tableBody.querySelectorAll('.view-btn');
+                const updateButtons = tableBody.querySelectorAll('.update-btn');
+                
+                viewButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const orderId = this.getAttribute('data-id');
+                        viewOrderDetails(orderId);
+                    });
+                });
+                
+                updateButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const orderId = this.getAttribute('data-id');
+                        openUpdateStatusModal(orderId);
+                    });
+                });
+            }
+            
+            function updatePagination(currentPage, totalPages, totalItems) {
+                const pageInfo = document.getElementById('page-info');
+                const prevPageBtn = document.getElementById('prev-page');
+                const nextPageBtn = document.getElementById('next-page');
+                
+                if (pageInfo) {
+                    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+                }
+                
+                if (prevPageBtn) {
+                    prevPageBtn.disabled = currentPage <= 1;
+                }
+                
+                if (nextPageBtn) {
+                    nextPageBtn.disabled = currentPage >= totalPages;
+                }
+            }
+            
+            function viewOrderDetails(orderId) {
+                // Find order in our data
+                const order = orders.find(order => order.id.toString() === orderId);
+                
+                if (!order) return;
+                
+                // Update modal with order details
+                document.getElementById('detail-order-id').textContent = order.id;
+                
+                // Format date
+                const orderDate = new Date(order.date);
+                const formattedDate = orderDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: true
+                });
+                
+                document.getElementById('detail-date').textContent = formattedDate;
+                
+                // Update status
+                const statusElement = document.getElementById('detail-status');
+                statusElement.textContent = order.status;
+                statusElement.className = 'status ' + order.status;
+                
+                // Update order type
+                document.getElementById('detail-type').textContent = order.orderType;
+                
+                // Update customer info
+                document.getElementById('detail-customer-name').textContent = order.customer.name;
+                document.getElementById('detail-customer-email').textContent = order.customer.email;
+                document.getElementById('detail-customer-phone').textContent = order.customer.phone;
+                
+                // Show/hide address based on order type
+                const addressSection = document.getElementById('detail-address-section');
+                
+                if (order.orderType === 'delivery' && order.customer.address) {
+                    addressSection.style.display = 'block';
+                    document.getElementById('detail-customer-address').textContent = order.customer.address;
+                } else {
+                    addressSection.style.display = 'none';
+                }
+                
+                // Update items
+                const itemsContainer = document.getElementById('detail-items');
+                itemsContainer.innerHTML = '';
+                
+                order.items.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'order-detail-item';
+                    itemElement.innerHTML = `
+                        <div class="item-name">${item.quantity}x ${item.name}</div>
+                        <div class="item-price">R${(item.price * item.quantity).toFixed(2)}</div>
+                    `;
+                    
+                    itemsContainer.appendChild(itemElement);
+                });
+                
+                // Update price summary
+                document.getElementById('detail-subtotal').textContent = `R${order.subtotal.toFixed(2)}`;
+                document.getElementById('detail-tax').textContent = `R${order.tax.toFixed(2)}`;
+                document.getElementById('detail-total').textContent = `R${order.total.toFixed(2)}`;
+                
+                // Show modal
+                document.getElementById('order-details-modal').style.display = 'block';
+            }
+            
+            function openUpdateStatusModal(orderId) {
+                // Find order in our data
+                const order = orders.find(order => order.id.toString() === orderId);
+                
+                if (!order) return;
+                
+                // Update modal
+                document.getElementById('status-order-id').textContent = orderId;
+                
+                // Setup status options based on current status
+                const newStatusSelect = document.getElementById('new-status');
+                
+                // Clear existing options (except the first placeholder)
+                while (newStatusSelect.options.length > 1) {
+                    newStatusSelect.remove(1);
+                }
+                
+                // Add appropriate next status options based on current status
+                const statusFlow = {
+                    'pending': ['confirmed', 'cancelled'],
+                    'confirmed': ['preparing', 'cancelled'],
+                    'preparing': ['ready', 'cancelled'],
+                    'ready': ['delivered', 'cancelled'],
+                    'delivered': [],
+                    'cancelled': []
+                };
+                
+                const nextStatuses = statusFlow[order.status] || [];
+                
+                nextStatuses.forEach(status => {
+                    const option = document.createElement('option');
+                    option.value = status;
+                    option.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                    newStatusSelect.appendChild(option);
+                });
+                
+                // Show modal
+                document.getElementById('update-status-modal').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

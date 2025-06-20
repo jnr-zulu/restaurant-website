@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Table - Waffle Heaven</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- Remove the reservations.css reference if the file doesn't exist -->
+    <script src="../js/main.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <h1><a href="../index.html">Waffle Heaven</a></h1>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="reservations.html" class="active">Reservations</a></li>
+                <li><a href="order-online.html">Order Online</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li class="account-dropdown">
+                    <a href="#" id="account-link">Account</a>
+                    <div class="dropdown-content">
+                        <a href="login.html">Login</a>
+                        <a href="register.html">Register</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="cart-icon">
+                <a href="cart.html">
+                    <img src="../img/cart-icon.png" alt="Shopping Cart">
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+            <div class="hamburger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Simple version without requiring special CSS -->
+        <section class="auth-section">
+            <div class="container">
+                <h2 class="section-title">Book a Table</h2>
+                <p class="section-description" style="text-align: center; margin-bottom: 30px;">Reserve your spot at Waffle Heaven for a delightful dining experience</p>
+                
+                <div class="form-container">
+                    <h3>Make a Reservation</h3>
+                    <form id="reservation-form">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="reservation-date">Date</label>
+                            <input type="date" id="reservation-date" name="date" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="reservation-time">Time</label>
+                            <select id="reservation-time" name="time" required>
+                                <option value="">Select a time</option>
+                                <option value="08:00">8:00 AM</option>
+                                <option value="08:30">8:30 AM</option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="09:30">9:30 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="10:30">10:30 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="11:30">11:30 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                                <option value="12:30">12:30 PM</option>
+                                <option value="13:00">1:00 PM</option>
+                                <option value="13:30">1:30 PM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="14:30">2:30 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="15:30">3:30 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                                <option value="16:30">4:30 PM</option>
+                                <option value="17:00">5:00 PM</option>
+                                <option value="17:30">5:30 PM</option>
+                                <option value="18:00">6:00 PM</option>
+                                <option value="18:30">6:30 PM</option>
+                                <option value="19:00">7:00 PM</option>
+                                <option value="19:30">7:30 PM</option>
+                                <option value="20:00">8:00 PM</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="guests">Number of Guests</label>
+                            <select id="guests" name="guests" required>
+                                <option value="">Select number of guests</option>
+                                <option value="1">1 person</option>
+                                <option value="2">2 people</option>
+                                <option value="3">3 people</option>
+                                <option value="4">4 people</option>
+                                <option value="5">5 people</option>
+                                <option value="6">6 people</option>
+                                <option value="7">7 people</option>
+                                <option value="8">8 people</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="occasion">Occasion (Optional)</label>
+                            <select id="occasion" name="occasion">
+                                <option value="">Select an occasion</option>
+                                <option value="birthday">Birthday</option>
+                                <option value="anniversary">Anniversary</option>
+                                <option value="business">Business Meal</option>
+                                <option value="date">Date</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="special-requests">Special Requests (Optional)</label>
+                            <textarea id="special-requests" name="special-requests" rows="3"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn primary-btn form-btn">Book Table</button>
+                    </form>
+                </div>
+                
+                <div style="margin-top: 40px; text-align: center;">
+                    <h3>Reservation Policies</h3>
+                    <ul style="max-width: 600px; margin: 20px auto; text-align: left;">
+                        <li>Reservations can be made up to 3 months in advance</li>
+                        <li>For parties larger than 8, please call us directly at 0822166658</li>
+                        <li>We hold your table for 15 minutes after the reservation time</li>
+                        <li>Please notify us at least 2 hours in advance for cancellations</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Waffle Heaven</h3>
+                <p>11 Spitskop Street<br>White River, Mpumalanga<br>South Africa</p>
+                <p>Phone: 0822166658</p>
+                <p>Email: patrickjunior1010@gmail.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hours</h3>
+                <p>Monday - Thursday: 8:00 AM - 8:00 PM</p>
+                <p>Friday - Saturday: 8:00 AM - 10:00 PM</p>
+                <p>Sunday: 9:00 AM - 6:00 PM</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="reservations.html">Reservations</a></li>
+                    <li><a href="order-online.html">Order Online</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-media">
+                    <a href="#" class="social-icon">Facebook</a>
+                    <a href="#" class="social-icon">Instagram</a>
+                    <a href="#" class="social-icon">Twitter</a>
+                </div>
+                <div class="newsletter">
+                    <h4>Subscribe to our newsletter</h4>
+                    <form id="newsletter-form">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn primary-btn">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 Waffle Heaven. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple form handling script
+        document.addEventListener('DOMContentLoaded', function() {
+            const reservationForm = document.getElementById('reservation-form');
+            
+            if (reservationForm) {
+                reservationForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form data
+                    const name = document.getElementById('name').value;
+                    const email = document.getElementById('email').value;
+                    const date = document.getElementById('reservation-date').value;
+                    const time = document.getElementById('reservation-time').value;
+                    const guests = document.getElementById('guests').value;
+                    
+                    // In a real application, you would send this data to the server
+                    // For now, we'll just show an alert
+                    alert(`Thank you, ${name}! Your reservation for ${guests} people on ${date} at ${time} has been received. A confirmation email will be sent to ${email}.`);
+                    
+                    // Reset form
+                    this.reset();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

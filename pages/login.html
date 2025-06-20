@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Waffle Heaven</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/main.js" defer></script>
+    <script src="../js/user.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <h1><a href="../index.html">Waffle Heaven</a></h1>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="reservations.html">Reservations</a></li>
+                <li><a href="order-online.html">Order Online</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li class="account-dropdown">
+                    <a href="#" id="account-link" class="active">Account</a>
+                    <div class="dropdown-content">
+                        <a href="login.html" class="active">Login</a>
+                        <a href="register.html">Register</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="cart-icon">
+                <a href="cart.html">
+                    <img src="../img/cart-icon.png" alt="Shopping Cart">
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+            <div class="hamburger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="auth-section">
+            <div class="container">
+                <div class="auth-container">
+                    <h2>Login to Your Account</h2>
+                    <form id="login-form" class="auth-form">
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" name="password" required>
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="remember-me" name="remember-me">
+                                Remember me
+                            </label>
+                        </div>
+                        <button type="submit" class="btn primary-btn form-btn">Login</button>
+                    </form>
+                    <div class="auth-links">
+                        <p>Don't have an account? <a href="register.html">Register</a></p>
+                        <p><a href="forgot-password.html">Forgot your password?</a></p>
+                    </div>
+                    <div class="auth-note">
+                        <h3>Demo Accounts:</h3>
+                        <p><strong>Admin:</strong> admin@waffleheaven.com / admin123</p>
+                        <p><strong>Staff:</strong> staff@waffleheaven.com / staff123</p>
+                        <p><strong>Customer:</strong> john@example.com / password123</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Waffle Heaven</h3>
+                <p>11 Spitskop Street<br>White River, Mpumalanga<br>South Africa</p>
+                <p>Phone: 0822166658</p>
+                <p>Email: patrickjunior1010@gmail.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hours</h3>
+                <p>Monday - Thursday: 8:00 AM - 8:00 PM</p>
+                <p>Friday - Saturday: 8:00 AM - 10:00 PM</p>
+                <p>Sunday: 9:00 AM - 6:00 PM</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="reservations.html">Reservations</a></li>
+                    <li><a href="order-online.html">Order Online</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-media">
+                    <a href="#" class="social-icon">Facebook</a>
+                    <a href="#" class="social-icon">Instagram</a>
+                    <a href="#" class="social-icon">Twitter</a>
+                </div>
+                <div class="newsletter">
+                    <h4>Subscribe to our newsletter</h4>
+                    <form id="newsletter-form">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn primary-btn">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 Waffle Heaven. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
