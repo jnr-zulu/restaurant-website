@@ -1,0 +1,205 @@
+/* profile.css - Specific styles for the profile page */
+
+/* Profile Section Layout */
+.profile-section {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section h1 {
+  color: #6a3c1e;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  border-bottom: 2px solid #f5d7b5;
+  padding-bottom: 0.5rem;
+}
+
+.profile-section h2 {
+  color: #6a3c1e;
+  margin: 1.5rem 0 1rem;
+  font-size: 1.5rem;
+}
+
+.profile-section h3 {
+  color: #6a3c1e;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Form Styling */
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #e6a54c;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(230, 165, 76, 0.2);
+}
+
+.form-actions {
+  margin-top: 1.5rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 0.8rem 1.5rem;
+  background-color: #e6a54c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn:hover {
+  background-color: #d8963a;
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background-color: #e6a54c;
+}
+
+.btn-secondary {
+  background-color: #6a3c1e;
+}
+
+/* Status Indicators */
+.loading-indicator {
+  padding: 1rem;
+  text-align: center;
+  color: #666;
+}
+
+.error-message {
+  padding: 1rem;
+  background-color: #ffe6e6;
+  border-left: 4px solid #cc0000;
+  color: #cc0000;
+  margin-bottom: 1rem;
+}
+
+/* Horizontal Rule */
+hr {
+  margin: 2rem 0;
+  border: none;
+  height: 1px;
+  background-color: #f5d7b5;
+}
+
+/* Order History, Favorites, and Loyalty Program */
+#orders-container,
+#favorites-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.order-card,
+.favorite-item {
+  background-color: #f9f4ec;
+  border-radius: 8px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.order-card:hover,
+.favorite-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Loyalty Program */
+.loyalty-points {
+  background-color: #f9f4ec;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.progress-bar {
+  height: 20px;
+  background-color: #e6e6e6;
+  border-radius: 10px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.progress-bar div {
+  height: 100%;
+  background-color: #e6a54c;
+  border-radius: 10px;
+  transition: width 0.5s ease-in-out;
+}
+
+.available-rewards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.reward-card {
+  background-color: #fff;
+  border: 2px solid #f5d7b5;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.reward-card:hover {
+  border-color: #e6a54c;
+  transform: scale(1.05);
+}
+
+.reward-card.disabled {
+  opacity: 0.6;
+  border-color: #ddd;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .profile-section {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  #orders-container,
+  #favorites-container,
+  .available-rewards {
+    grid-template-columns: 1fr;
+  }
+}

@@ -32,5 +32,18 @@ async function checkUser() {
   }
 }
 
+// Functions for authentication
+async function getCurrentUser() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error) throw error;
+  return data.user;
+}
+
+async function checkAuthState() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error) throw error;
+  return data.user;
+}
+
 // Check user status when page loads
 document.addEventListener('DOMContentLoaded', checkUser);

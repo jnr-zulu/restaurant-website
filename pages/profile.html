@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Waffle Heaven</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/profile.css">
+    <!-- Add Supabase library before auth.js -->
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/user.js"></script>
+</head>
+<body>
+    <header>
+        <!-- Navigation will go here -->
+        <nav id="main-nav">
+            <!-- Navigation items will be loaded dynamically -->
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="profile-section">
+            <h1>My Profile</h1>
+            
+            <div id="profile-loading" class="loading-indicator">
+                <p>Loading your profile information...</p>
+            </div>
+            
+            <div id="profile-error" class="error-message" style="display: none;">
+                <p>Error loading profile. Please try again later.</p>
+            </div>
+            
+            <div id="not-logged-in" style="display: none;">
+                <p>You must be logged in to view your profile.</p>
+                <a href="login.html" class="btn btn-primary">Log In</a>
+            </div>
+            
+            <div id="profile-container" style="display: none;">
+                <form id="profile-form" onsubmit="return updateProfile(event)">
+                    <div class="form-group">
+                        <label for="profile-username">Username</label>
+                        <input type="text" id="profile-username" name="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profile-email">Email</label>
+                        <input type="email" id="profile-email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profile-phone">Phone</label>
+                        <input type="tel" id="profile-phone" name="phone">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profile-address">Default Delivery Address</label>
+                        <textarea id="profile-address" name="address" rows="3"></textarea>
+                    </div>
+                    
+                    <h2>Change Password</h2>
+                    <div class="form-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" name="currentPassword">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" name="newPassword">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-new-password">Confirm New Password</label>
+                        <input type="password" id="confirm-new-password" name="confirmNewPassword">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </div>
+                </form>
+                
+                <hr>
+                
+                <h2>Order History</h2>
+                <div id="order-history">
+                    <div id="orders-loading" class="loading-indicator">
+                        <p>Loading your orders...</p>
+                    </div>
+                    <div id="no-orders" style="display: none;">
+                        <p>You haven't placed any orders yet.</p>
+                        <a href="menu.html" class="btn btn-secondary">Browse Our Menu</a>
+                    </div>
+                    <div id="orders-container" style="display: none;">
+                        <!-- Orders will be dynamically inserted here -->
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h2>Favorites</h2>
+                <div id="favorites">
+                    <div id="favorites-loading" class="loading-indicator">
+                        <p>Loading your favorites...</p>
+                    </div>
+                    <div id="no-favorites" style="display: none;">
+                        <p>You haven't saved any favorites yet.</p>
+                        <a href="menu.html" class="btn btn-secondary">Browse Our Menu</a>
+                    </div>
+                    <div id="favorites-container" style="display: none;">
+                        <!-- Favorites will be dynamically inserted here -->
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h2>Loyalty Program</h2>
+                <div id="loyalty-program">
+                    <div id="loyalty-loading" class="loading-indicator">
+                        <p>Loading your loyalty information...</p>
+                    </div>
+                    <div id="loyalty-container" style="display: none;">
+                        <div class="loyalty-points">
+                            <h3>Your Points: <span id="points-count">0</span></h3>
+                            <div class="progress-bar">
+                                <div id="points-progress" style="width: 0%"></div>
+                            </div>
+                            <p><span id="points-to-next">0</span> points until your next reward!</p>
+                        </div>
+                        <div class="available-rewards" id="available-rewards">
+                            <!-- Rewards will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer content will go here -->
+    </footer>
+
+    <script>
+        // This script handles the profile page functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            checkAuthState().then(user => {
+                if (user) {
+                    document.getElementById('not-logged-in').style.display = 'none';
+                    loadProfileData(user);
+                    loadOrderHistory(user);
+                    loadFavorites(user);
+                    loadLoyaltyInfo(user);
+                } else {
+                    document.getElementById('profile-loading').style.display = 'none';
+                    document.getElementById('not-logged-in').style.display = 'block';
+                }
+            }).catch(error => {
+                console.error('Auth state error:', error);
+                document.getElementById('profile-loading').style.display = 'none';
+                document.getElementById('profile-error').style.display = 'block';
+            });
+        });
+
+        // Function to load profile data from Supabase
+        async function loadProfileData(user) {
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .single();
+                
+                if (error) throw error;
+                
+                // Fill the form with user data
+                document.getElementById('profile-username').value = data.username || '';
+                document.getElementById('profile-email').value = user.email || '';
+                document.getElementById('profile-phone').value = data.phone || '';
+                document.getElementById('profile-address').value = data.address || '';
+                
+                // Hide loading indicator and show profile
+                document.getElementById('profile-loading').style.display = 'none';
+                document.getElementById('profile-container').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('profile-loading').style.display = 'none';
+                document.getElementById('profile-error').style.display = 'block';
+            }
+        }
+
+        // Function to update profile in Supabase
+        async function updateProfile(event) {
+            event.preventDefault();
+            
+            // Validate form before submission
+            if (!validateForm('profile-form')) {
+                return false;
+            }
+            
+            const username = document.getElementById('profile-username').value;
+            const phone = document.getElementById('profile-phone').value;
+            const address = document.getElementById('profile-address').value;
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmNewPassword = document.getElementById('confirm-new-password').value;
+            
+            // Update profile data
+            try {
+                const user = await getCurrentUser();
+                
+                if (!user) throw new Error('User not authenticated');
+                
+                // Update profile information
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .update({
+                        username: username,
+                        phone: phone,
+                        address: address,
+                        updated_at: new Date()
+                    })
+                    .eq('user_id', user.id);
+                
+                if (profileError) throw profileError;
+                
+                // Update password if provided
+                if (currentPassword && newPassword) {
+                    if (newPassword !== confirmNewPassword) {
+                        alert('New passwords do not match');
+                        return false;
+                    }
+                    
+                    // This is a placeholder - in a real app, you would verify the current password
+                    // before allowing the password change
+                    const { error: passwordError } = await supabase.auth.updateUser({
+                        password: newPassword
+                    });
+                    
+                    if (passwordError) throw passwordError;
+                }
+                
+                alert('Profile updated successfully');
+                
+                // Clear password fields
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-new-password').value = '';
+                
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Failed to update profile: ' + error.message);
+            }
+            
+            return false;
+        }
+
+        // Functions to load order history, favorites, and loyalty info
+        // These would be implemented similarly to loadProfileData
+        // with appropriate Supabase queries
+        
+        async function loadOrderHistory(user) {
+            // Implementation would query the orders table
+            // and display the results in the orders-container
+        }
+        
+        async function loadFavorites(user) {
+            // Implementation would query the favorites table
+            // and display the results in the favorites-container
+        }
+        
+        async function loadLoyaltyInfo(user) {
+            // Implementation would query the loyalty_points table
+            // and display the results in the loyalty-container
+        }
+    </script>
+</body>
+</html>

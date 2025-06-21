@@ -1,0 +1,190 @@
+<!-- checkout.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Waffle Heaven</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/checkout.css">
+    <!-- Include Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="images/waffle-heaven-logo.png" alt="Waffle Heaven Logo"></a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="menu.html" class="active">Menu</a></li>
+                <li><a href="reservations.html">Reservations</a></li>
+                <li><a href="order-online.html">Order Online</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li class="account-dropdown">
+                    <a href="profile.html" id="account-link">Account</a>
+                    <div class="dropdown-content">
+                        <a href="login.html">Login</a>
+                        <a href="register.html">Register</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="user-actions">
+                <a href="#" id="cart-icon" class="cart-link"><span id="cart-count">0</span> 🛒</a>
+                <div id="user-menu">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="checkout-container">
+        <h1>Checkout</h1>
+        
+        <div class="checkout-layout">
+            <!-- Order Summary Section -->
+            <section class="order-summary">
+                <h2>Order Summary</h2>
+                <div id="cart-items">
+                    <!-- Cart items will be populated here by JavaScript -->
+                    <div class="loading">Loading your order...</div>
+                </div>
+                
+                <div class="order-totals">
+                    <div class="subtotal">
+                        <span>Subtotal:</span>
+                        <span id="subtotal-amount">R0.00</span>
+                    </div>
+                    <div class="delivery-fee">
+                        <span>Delivery Fee:</span>
+                        <span id="delivery-fee">R0.00</span>
+                    </div>
+                    <div class="tax">
+                        <span>VAT (15%):</span>
+                        <span id="tax-amount">R0.00</span>
+                    </div>
+                    <div class="total">
+                        <span>Total:</span>
+                        <span id="total-amount">R0.00</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Checkout Form Section -->
+            <section class="checkout-form">
+                <h2>Delivery Information</h2>
+                <form id="payment-form">
+                    <!-- Delivery Method Selection -->
+                    <div class="form-group">
+                        <label for="delivery-method">Choose Delivery Method:</label>
+                        <select id="delivery-method" name="deliveryMethod" required>
+                            <option value="delivery">Delivery (R25.00)</option>
+                            <option value="pickup">Pickup (Free)</option>
+                        </select>
+                    </div>
+
+                    <!-- Delivery Information -->
+                    <div id="delivery-info">
+                        <div class="form-group">
+                            <label for="address">Street Address:</label>
+                            <input type="text" id="address" name="address">
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City:</label>
+                            <input type="text" id="city" name="city">
+                        </div>
+                        <div class="form-group">
+                            <label for="postal-code">Postal Code:</label>
+                            <input type="text" id="postal-code" name="postalCode">
+                        </div>
+                        <div class="form-group">
+                            <label for="delivery-notes">Delivery Notes:</label>
+                            <textarea id="delivery-notes" name="deliveryNotes" placeholder="Apartment number, gate code, or special instructions"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Pickup Information (hidden by default) -->
+                    <div id="pickup-info" style="display: none;">
+                        <div class="form-group">
+                            <p><strong>Pickup Location:</strong> 123 Main Street, Cape Town</p>
+                            <p><strong>Hours:</strong> 8:00 AM - 8:00 PM</p>
+                            <p>Your order will be ready for pickup approximately 20 minutes after ordering.</p>
+                        </div>
+                    </div>
+
+                    <h2>Contact Information</h2>
+                    <div class="form-group">
+                        <label for="name">Full Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number:</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+
+                    <h2>Payment Information</h2>
+                    <div class="form-group">
+                        <div id="card-element">
+                            <!-- A Stripe Element will be inserted here. -->
+                        </div>
+                        <!-- Used to display form errors. -->
+                        <div id="card-errors" role="alert"></div>
+                    </div>
+
+                    <button type="submit" id="submit-button" class="btn-primary">Place Order</button>
+                </form>
+                
+                <div id="order-success" class="success-message" style="display: none;">
+                    <h2>Thank You for Your Order!</h2>
+                    <p>Your order has been successfully placed. You will receive a confirmation email shortly.</p>
+                    <p>Order Reference: <span id="order-reference"></span></p>
+                    <a href="index.html" class="btn-secondary">Return to Homepage</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Waffle Heaven</h3>
+                <p>Serving the best waffles in town since 2023</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: <a href="mailto:info@waffleheaven.co.za">info@waffleheaven.co.za</a></p>
+                <p>Phone: 021-555-1234</p>
+            </div>
+            <div class="footer-section">
+                <h3>Hours</h3>
+                <p>Monday-Friday: 7am-8pm</p>
+                <p>Saturday-Sunday: 8am-10pm</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Waffle Heaven. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/checkout.js"></script>
+</body>
+</html>
