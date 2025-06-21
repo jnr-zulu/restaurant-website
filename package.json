@@ -2,6 +2,7 @@
   "name": "waffle-heaven",
   "version": "1.0.0",
   "dependencies": {
+    "stripe": "^11.0.0",
     "@supabase/supabase-js": "^2.10.0",
     "uuid": "^9.0.0",
     "cors": "^2.8.5",
@@ -11,14 +12,5 @@
   "scripts": {
     "build": "npm install",
     "dev": "netlify dev"
-  },
-
-  
-  "ependencies": {
-    "stripe": "^11.0.0",
-    "@supabase/supabase-js": "^2.0.0"
-    
   }
-
-
 }
