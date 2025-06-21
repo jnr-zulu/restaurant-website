@@ -11,6 +11,82 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Add this function to your cart.js file
+async function validateCart() {
+  try {
+    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    
+    // If cart is empty, no need to validate
+    if (cartItems.length === 0) return [];
+    
+    // Call the Netlify function to validate cart
+    const response = await fetch('/api/cart-operations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        operation: 'validate',
+        cartItems: cartItems
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Update localStorage with consolidated cart
+      localStorage.setItem('cartItems', JSON.stringify(result.cartItems));
+      return result.cartItems;
+    } else {
+      console.error('Cart validation failed:', result.error);
+      return cartItems; // Return original cart if validation fails
+    }
+  } catch (error) {
+    console.error('Error validating cart:', error);
+    return JSON.parse(localStorage.getItem('cartItems')) || [];
+  }
+}
+
+// Modify your displayCartItems function to use validateCart
+async function displayCartItems() {
+  const cartItemsContainer = document.getElementById('cart-items');
+  const emptyCartMessage = document.getElementById('empty-cart-message');
+  
+  if (!cartItemsContainer) return;
+  
+  // Show loading state
+  cartItemsContainer.innerHTML = '<div class="loading">Loading your cart...</div>';
+  
+  // Get validated cart items
+  const cartItems = await validateCart();
+  
+  // Clear previous content
+  cartItemsContainer.innerHTML = '';
+  
+  // Show/hide empty cart message
+  if (cartItems.length === 0) {
+    if (emptyCartMessage) {
+      emptyCartMessage.style.display = 'block';
+    }
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn) {
+      checkoutBtn.style.display = 'none';
+    }
+    return;
+  } else {
+    if (emptyCartMessage) {
+      emptyCartMessage.style.display = 'none';
+    }
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn) {
+      checkoutBtn.style.display = 'block';
+    }
+  }
+}
+
+
+
+
 function displayCartItems() {
     const cartItemsContainer = document.getElementById('cart-items');
     const emptyCartMessage = document.getElementById('empty-cart-message');
@@ -206,6 +282,7 @@ function initializeCheckout() {
             processOrder();
         });
     }
+    
 }
 
 // These functions are called in your code but are not defined
