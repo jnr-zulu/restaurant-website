@@ -97,7 +97,7 @@ function initializeLoginForm() {
         // For demo purposes, we'll check against hardcoded values and localStorage
         
         // Check admin credentials
-        if (email === 'admin@waffleheaven.com' && password === 'admin123') {
+        if (email === 'admin@waffleheaven.com' && password === '0824669786Jnr') {
             login({
                 id: 'admin',
                 username: 'admin',
@@ -109,7 +109,7 @@ function initializeLoginForm() {
         }
         
         // Check staff credentials
-        if (email === 'staff@waffleheaven.com' && password === 'staff123') {
+        if (email === 'staff@waffleheaven.com' && password === '0824669786Jnr') {
             login({
                 id: 'staff',
                 username: 'staff',
