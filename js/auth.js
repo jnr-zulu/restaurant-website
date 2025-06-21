@@ -1,7 +1,7 @@
 // Create auth.js in your js folder
 // Initialize Supabase client
-const supabaseUrl = 'https://your-project-id.supabase.co';
-const supabaseKey = 'your-supabase-anon-key';
+const supabaseUrl = 'https://fweirplinqihuukrpvqd.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3ZWlycGxpbnFpaHV1a3JwdnFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0NDcwMTcsImV4cCI6MjA2NjAyMzAxN30.mP0RBD7F5vpfjmp4f7tI3VG3d40PG3lzAXuEHe_ALxg';
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 // Handle user authentication state

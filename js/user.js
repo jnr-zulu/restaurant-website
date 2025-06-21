@@ -20,6 +20,29 @@ document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
 });
 
+function validateForm() {
+  // Get form elements
+  const name = document.getElementById('name')?.value;
+  const email = document.getElementById('email')?.value;
+  // Add any other form fields you need to validate
+  
+  // Basic validation
+  if (!name || !email) {
+    alert('Please fill out all required fields');
+    return false;
+  }
+  
+  // Email validation
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (email && !emailPattern.test(email)) {
+    alert('Please enter a valid email address');
+    return false;
+  }
+  
+  return true;
+}
+
+
 function initializeLoginForm() {
     const loginForm = document.getElementById('login-form');
     
