@@ -1,4 +1,38 @@
-// order-handler.js
+// order-handler.js// order-handler.js
+document.addEventListener('DOMContentLoaded', function() {
+    // Get references to elements
+    const deliveryOption = document.getElementById('delivery-option');
+    const pickupOption = document.getElementById('pickup-option');
+    const deliveryForm = document.getElementById('delivery-form');
+    const pickupForm = document.getElementById('pickup-form');
+    const menuSection = document.getElementById('menu-section');
+    const addressForm = document.getElementById('address-form');
+    const continueToMenuBtn = document.getElementById('continue-to-menu');
+    
+    // Essential function - shows the menu section
+    function showMenuSection() {
+        menuSection.style.display = 'block';
+        document.querySelector('.order-options').style.display = 'none';
+    }
+    
+    // Fix for the Continue to Menu button (pickup option)
+    if (continueToMenuBtn) {
+        continueToMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showMenuSection();
+        });
+    }
+    
+    // Handle delivery form submission
+    if (addressForm) {
+        addressForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            showMenuSection(); // Show menu immediately
+        });
+    }
+});
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // Get references to elements
     const deliveryOption = document.getElementById('delivery-option');

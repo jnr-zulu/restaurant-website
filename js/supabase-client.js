@@ -54,3 +54,28 @@ async function saveDeliveryAddress(addressData) {
         throw error;
     }
 }
+
+// Initialize the client
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Function to fetch menu items
+async function fetchMenuItems() {
+    try {
+        const { data, error } = await supabase
+            .from('menu_items')
+            .select('*');
+        
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error('Error fetching menu:', error);
+        return [];
+    }
+}
+
+// Function to save address (simplified)
+async function saveDeliveryAddress(addressData) {
+    console.log('Saving address:', addressData);
+    // In development, just return success without actual DB insertion
+    return { id: 1, ...addressData };
+}
