@@ -21,26 +21,26 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function validateForm() {
-  // Get form elements
-  const name = document.getElementById('name')?.value;
+  // Get all form fields you need to validate
   const email = document.getElementById('email')?.value;
-  // Add any other form fields you need to validate
+  const password = document.getElementById('password')?.value;
   
   // Basic validation
-  if (!name || !email) {
+  if (!email || !password) {
     alert('Please fill out all required fields');
     return false;
   }
   
   // Email validation
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (email && !emailPattern.test(email)) {
+  if (!emailPattern.test(email)) {
     alert('Please enter a valid email address');
     return false;
   }
   
   return true;
 }
+
 
 
 function initializeLoginForm() {
