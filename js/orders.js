@@ -1,194 +1,171 @@
-// orders.js - Handles order-related functionality for Waffle Heaven
-
-import { supabase } from './supabase.js';
-
-// Function to create a new order
-export async function createOrder(orderData) {
-  try {
-    // First, create the order record
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .insert([{
-        user_id: orderData.userId,
-        order_date: new Date(),
-        status: 'received',
-        delivery_method: orderData.deliveryMethod,
-        delivery_address: orderData.deliveryAddress || null,
-        contact_phone: orderData.contactPhone,
-        payment_method: orderData.paymentMethod,
-        special_instructions: orderData.specialInstructions || null,
-        subtotal: orderData.subtotal,
-        tax: orderData.tax,
-        delivery_fee: orderData.deliveryFee || 0,
-        total_amount: orderData.totalAmount
-      }])
-      .select();
-
-    if (orderError) throw orderError;
+// orders.js
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize cart from localStorage or create empty cart
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
     
-    // Then, add all order items
-    const orderItems = orderData.items.map(item => ({
-      order_id: order[0].id,
-      menu_item_id: item.id,
-      quantity: item.quantity,
-      unit_price: item.price,
-      customizations: item.customizations || null
-    }));
-
-    const { error: itemsError } = await supabase
-      .from('order_items')
-      .insert(orderItems);
-
-    if (itemsError) throw itemsError;
-
-    // Update customer loyalty points if they are logged in
-    if (orderData.userId) {
-      const pointsToAdd = Math.floor(orderData.totalAmount);
-      const { error: userError } = await supabase.rpc('add_loyalty_points', { 
-        user_id: orderData.userId, 
-        points: pointsToAdd 
-      });
-      
-      if (userError) console.error('Failed to update loyalty points:', userError);
-    }
-
-    return { success: true, orderId: order[0].id };
-  } catch (error) {
-    console.error('Error creating order:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// Function to get an order by ID
-export async function getOrderById(orderId) {
-  try {
-    // Get the order details
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('id', orderId)
-      .single();
-
-    if (orderError) throw orderError;
-    
-    // Get the order items
-    const { data: items, error: itemsError } = await supabase
-      .from('order_items')
-      .select(`
-        *,
-        menu_items(*)
-      `)
-      .eq('order_id', orderId);
-
-    if (itemsError) throw itemsError;
-    
-    return { success: true, order: { ...order, items } };
-  } catch (error) {
-    console.error('Error fetching order:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// Function to get orders for a specific user
-export async function getUserOrders(userId) {
-  try {
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('user_id', userId)
-      .order('order_date', { ascending: false });
-
-    if (error) throw error;
-    
-    return { success: true, orders: data };
-  } catch (error) {
-    console.error('Error fetching user orders:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// Function to update order status (for staff)
-export async function updateOrderStatus(orderId, status) {
-  try {
-    const { error } = await supabase
-      .from('orders')
-      .update({ status })
-      .eq('id', orderId);
-
-    if (error) throw error;
-    
-    return { success: true };
-  } catch (error) {
-    console.error('Error updating order status:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// Function to cancel an order (for customers)
-export async function cancelOrder(orderId) {
-  try {
-    // Check if the order is eligible for cancellation (only 'received' status)
-    const { data: order, error: fetchError } = await supabase
-      .from('orders')
-      .select('status')
-      .eq('id', orderId)
-      .single();
-      
-    if (fetchError) throw fetchError;
-    
-    if (order.status !== 'received') {
-      return { success: false, error: 'Only orders with "received" status can be cancelled' };
+    // Update cart count in header
+    function updateCartCount() {
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) {
+            const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCount.textContent = itemCount;
+        }
     }
     
-    // Update the order status to 'cancelled'
-    const { error: updateError } = await supabase
-      .from('orders')
-      .update({ status: 'cancelled' })
-      .eq('id', orderId);
-
-    if (updateError) throw updateError;
+    // Initialize cart count
+    updateCartCount();
     
-    return { success: true };
-  } catch (error) {
-    console.error('Error cancelling order:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// Function to get recent orders (for staff dashboard)
-export async function getRecentOrders(limit = 10) {
-  try {
-    const { data, error } = await supabase
-      .from('orders')
-      .select(`
-        *,
-        users(first_name, last_name, email, phone)
-      `)
-      .order('order_date', { ascending: false })
-      .limit(limit);
-
-    if (error) throw error;
-    
-    return { success: true, orders: data };
-  } catch (error) {
-    console.error('Error fetching recent orders:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// Function to get order statistics (for admin dashboard)
-export async function getOrderStatistics(startDate, endDate) {
-  try {
-    const { data, error } = await supabase.rpc('get_order_statistics', {
-      start_date: startDate,
-      end_date: endDate
+    // Add event listeners to add-to-cart buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('add-to-cart')) {
+            const button = e.target;
+            const id = button.dataset.id;
+            const name = button.dataset.name;
+            const price = parseFloat(button.dataset.price);
+            const quantityInput = button.closest('.menu-item-content').querySelector('.quantity-input');
+            const quantity = parseInt(quantityInput.value);
+            
+            addToCart(id, name, price, quantity);
+        }
     });
-
-    if (error) throw error;
     
-    return { success: true, statistics: data };
-  } catch (error) {
-    console.error('Error fetching order statistics:', error);
-    return { success: false, error: error.message };
-  }
-}
+    // Function to add items to cart
+    function addToCart(id, name, price, quantity) {
+        // Check if item already exists in cart
+        const existingItemIndex = cart.findIndex(item => item.id === id);
+        
+        if (existingItemIndex > -1) {
+            // Update quantity if item exists
+            cart[existingItemIndex].quantity += quantity;
+        } else {
+            // Add new item to cart
+            cart.push({
+                id,
+                name,
+                price,
+                quantity
+            });
+        }
+        
+        // Save cart to localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Update cart count
+        updateCartCount();
+        
+        // Update cart preview
+        updateCartPreview();
+        
+        // Show confirmation message
+        alert(`${quantity} x ${name} added to cart!`);
+    }
+    
+    // Function to update cart preview
+    function updateCartPreview() {
+        const cartPreviewItems = document.getElementById('cart-preview-items');
+        const cartPreviewTotal = document.getElementById('cart-preview-total');
+        
+        if (cartPreviewItems) {
+            if (cart.length === 0) {
+                cartPreviewItems.innerHTML = '<p class="empty-cart-message">Your cart is empty</p>';
+            } else {
+                cartPreviewItems.innerHTML = '';
+                
+                cart.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'cart-preview-item';
+                    itemElement.innerHTML = `
+                        <div class="item-details">
+                            <h4>${item.name}</h4>
+                            <p>${item.quantity} x R${item.price.toFixed(2)}</p>
+                        </div>
+                        <div class="item-price">
+                            R${(item.price * item.quantity).toFixed(2)}
+                        </div>
+                    `;
+                    cartPreviewItems.appendChild(itemElement);
+                });
+            }
+        }
+        
+        if (cartPreviewTotal) {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartPreviewTotal.textContent = `R${total.toFixed(2)}`;
+        }
+    }
+    
+    // Initial update of cart preview
+    updateCartPreview();
+    
+    // Handle quantity button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('quantity-btn')) {
+            const button = e.target;
+            const input = button.parentElement.querySelector('.quantity-input');
+            let value = parseInt(input.value);
+            
+            if (button.classList.contains('decrease')) {
+                value = value > 1 ? value - 1 : 1;
+            } else if (button.classList.contains('increase')) {
+                value = value + 1;
+            }
+            
+            input.value = value;
+        }
+    });
+    
+    // Handle checkout process
+    const checkoutBtn = document.querySelector('.checkout-btn');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            
+            try {
+                // Get order information
+                const orderType = document.getElementById('delivery-option').classList.contains('active') 
+                    ? 'delivery' 
+                    : 'pickup';
+                
+                let deliveryInfo = null;
+                if (orderType === 'delivery') {
+                    deliveryInfo = {
+                        street: document.getElementById('street').value,
+                        city: document.getElementById('city').value,
+                        province: document.getElementById('province').value,
+                        postal_code: document.getElementById('postal').value,
+                        delivery_notes: document.getElementById('delivery-notes').value
+                    };
+                }
+                
+                const orderData = {
+                    items: cart,
+                    total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                    order_type: orderType,
+                    delivery_info: deliveryInfo,
+                    status: 'pending',
+                    created_at: new Date().toISOString()
+                };
+                
+                // Save order to Supabase
+                const savedOrder = await saveOrder(orderData);
+                
+                // Clear cart after successful order
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                updateCartPreview();
+                
+                // Redirect to confirmation page
+                window.location.href = `order-confirmation.html?order_id=${savedOrder.id}`;
+            } catch (error) {
+                console.error('Error processing order:', error);
+                alert('There was an error processing your order. Please try again.');
+            }
+        });
+    }
+});

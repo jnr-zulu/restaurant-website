@@ -1,4 +1,146 @@
-// js/order-handler.js
+// order-handler.js
+document.addEventListener('DOMContentLoaded', function() {
+    // Get references to elements
+    const deliveryOption = document.getElementById('delivery-option');
+    const pickupOption = document.getElementById('pickup-option');
+    const deliveryForm = document.getElementById('delivery-form');
+    const pickupForm = document.getElementById('pickup-form');
+    const menuSection = document.getElementById('menu-section');
+    const addressForm = document.getElementById('address-form');
+    const continueToMenuBtn = document.getElementById('continue-to-menu');
+    
+    // Set up order type selection
+    deliveryOption.addEventListener('click', function() {
+        deliveryOption.classList.add('active');
+        pickupOption.classList.remove('active');
+        deliveryForm.style.display = 'block';
+        pickupForm.style.display = 'none';
+    });
+    
+    pickupOption.addEventListener('click', function() {
+        pickupOption.classList.add('active');
+        deliveryOption.classList.remove('active');
+        pickupForm.style.display = 'block';
+        deliveryForm.style.display = 'none';
+    });
+    
+    // Function to show menu section
+    function showMenuSection() {
+        menuSection.style.display = 'block';
+        document.querySelector('.order-options').style.display = 'none';
+        
+        // Load menu items from Supabase
+        loadMenuItemsFromSupabase();
+    }
+    
+    // Fix for the Continue to Menu button
+    continueToMenuBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        showMenuSection();
+    });
+    
+    // Handle delivery address form submission
+    if (addressForm) {
+        addressForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const addressData = {
+                street: document.getElementById('street').value,
+                city: document.getElementById('city').value,
+                province: document.getElementById('province').value,
+                postal_code: document.getElementById('postal').value,
+                delivery_notes: document.getElementById('delivery-notes').value,
+                user_id: getCurrentUserId() // You'd need to implement this function
+            };
+            
+            try {
+                // Save address to Supabase
+                await saveDeliveryAddress(addressData);
+                
+                // Show menu section
+                showMenuSection();
+            } catch (error) {
+                console.error('Error saving address:', error);
+                alert('There was an error saving your address. Please try again.');
+            }
+        });
+    }
+    
+    // Function to load menu items from Supabase
+    async function loadMenuItemsFromSupabase() {
+        try {
+            const menuItems = await fetchMenuItems();
+            
+            // Organize menu items by category
+            const categorizedItems = {
+                'sweet': [],
+                'savory': [],
+                'beverages': [],
+                'combos': []
+            };
+            
+            menuItems.forEach(item => {
+                if (categorizedItems[item.category]) {
+                    categorizedItems[item.category].push(item);
+                }
+            });
+            
+            // Populate each category in the menu
+            for (const [category, items] of Object.entries(categorizedItems)) {
+                const categoryContainer = document.getElementById(category);
+                if (categoryContainer) {
+                    const menuGrid = categoryContainer.querySelector('.menu-grid');
+                    if (menuGrid) {
+                        menuGrid.innerHTML = ''; // Clear existing items
+                        
+                        items.forEach(item => {
+                            const itemElement = createMenuItemElement(item);
+                            menuGrid.appendChild(itemElement);
+                        });
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error loading menu items:', error);
+        }
+    }
+    
+    // Function to create a menu item element
+    function createMenuItemElement(item) {
+        const menuItem = document.createElement('div');
+        menuItem.className = 'menu-item';
+        
+        menuItem.innerHTML = `
+            <img src="${item.image_url}" alt="${item.name}">
+            <div class="menu-item-content">
+                <div class="menu-item-header">
+                    <h4>${item.name}</h4>
+                    <span class="price">R${item.price.toFixed(2)}</span>
+                </div>
+                <p>${item.description}</p>
+                <div class="quantity-selector">
+                    <label for="quantity-${item.id}">Quantity:</label>
+                    <div class="quantity-controls">
+                        <button type="button" class="quantity-btn decrease">-</button>
+                        <input type="number" class="quantity-input" id="quantity-${item.id}" value="1" min="1">
+                        <button type="button" class="quantity-btn increase">+</button>
+                    </div>
+                </div>
+                <button class="btn primary-btn add-to-cart" 
+                    data-id="${item.id}" 
+                    data-name="${item.name}" 
+                    data-price="${item.price}">Add to Cart</button>
+            </div>
+        `;
+        
+        return menuItem;
+    }
+});
+
+
+
+
 class OrderHandler {
   constructor() {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
