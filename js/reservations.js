@@ -6,6 +6,46 @@ document.addEventListener('DOMContentLoaded', function() {
     setupDateTimePickers();
 });
 
+function validateForm(formId) {
+    // Get form elements
+    const form = document.getElementById(formId);
+    const name = form.querySelector('[name="name"]').value;
+    const email = form.querySelector('[name="email"]').value;
+    const phone = form.querySelector('[name="phone"]').value;
+    const date = form.querySelector('[name="date"]').value;
+    const time = form.querySelector('[name="time"]').value;
+    const guests = form.querySelector('[name="guests"]').value;
+    
+    // Basic validation
+    if (!name || !email || !phone || !date || !time || !guests) {
+        alert('Please fill out all required fields');
+        return false;
+    }
+    
+    // Email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+        alert('Please enter a valid email address');
+        return false;
+    }
+    
+    // Phone validation (basic)
+    const phonePattern = /^[0-9+\-\s()]{10,15}$/;
+    if (!phonePattern.test(phone)) {
+        alert('Please enter a valid phone number');
+        return false;
+    }
+    
+    // Guest number validation
+    const guestNum = parseInt(guests);
+    if (isNaN(guestNum) || guestNum < 1 || guestNum > 20) {
+        alert('Please enter a valid number of guests (1-20)');
+        return false;
+    }
+    
+    return true;
+}
+
 function initializeReservationForm() {
     const reservationForm = document.getElementById('reservation-form');
     
