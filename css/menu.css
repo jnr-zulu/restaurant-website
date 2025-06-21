@@ -1,0 +1,356 @@
+/* Menu Styles */
+:root {
+    --primary-color: #ff6b3d;
+    --secondary-color: #34495e;
+    --accent-color: #ffc259;
+    --light-color: #f8f9fa;
+    --dark-color: #2c3e50;
+    --text-color: #333;
+    --background-color: #fff;
+    --border-radius: 4px;
+    --transition: all 0.3s ease;
+    --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Menu Section */
+.menu-section {
+    padding: 60px 5%;
+    background-color: var(--light-color);
+}
+
+/* Category Navigation */
+.menu-categories {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.menu-category-btn {
+    padding: 8px 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.menu-category-btn:hover,
+.menu-category-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Menu Grid Layout */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 1rem 0;
+}
+
+/* Menu Item Card */
+.menu-item {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: var(--transition);
+}
+
+.menu-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.menu-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.menu-item-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.menu-item-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--dark-color);
+}
+
+.price {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.menu-item p {
+    margin: 0 0 1rem;
+    flex-grow: 1;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.menu-item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+/* Dietary Information */
+.dietary-info {
+    display: flex;
+    gap: 5px;
+}
+
+.dietary-info span {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background-color: #f1f1f1;
+    color: var(--dark-color);
+}
+
+.dietary-info .vegetarian {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.dietary-info .vegan {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.dietary-info .gluten-free {
+    background-color: #ffeeba;
+    color: #856404;
+}
+
+/* Add to Cart Button */
+.add-to-cart {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.add-to-cart:hover {
+    background-color: #e8562a;
+}
+
+.add-to-cart i {
+    font-size: 1rem;
+}
+
+/* Tags */
+.featured-tag, .special-offer {
+    position: absolute;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.featured-tag {
+    top: 10px;
+    right: 10px;
+    background-color: var(--accent-color);
+    color: var(--dark-color);
+}
+
+.special-offer {
+    top: 10px;
+    left: 10px;
+    background-color: #e74c3c;
+    color: white;
+}
+
+/* Menu Item Details Modal */
+.menu-details-modal .modal-content {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+}
+
+.menu-details-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.menu-details-content {
+    padding: 20px;
+}
+
+.menu-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.menu-details-price {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.menu-details-description {
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+/* Nutrition Information */
+.nutrition-info, .customize-options {
+    margin-bottom: 20px;
+}
+
+.nutrition-info h4, .customize-options h4 {
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.nutrition-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.nutrition-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Customization Options */
+.customize-list {
+    display: grid;
+    gap: 10px;
+}
+
+.customize-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.customize-item label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.customize-item span {
+    color: var(--primary-color);
+}
+
+/* Quantity Controls */
+.menu-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ddd;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.quantity-input {
+    width: 40px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    padding: 5px;
+}
+
+.add-to-cart-modal {
+    flex-grow: 1;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+    .menu-section {
+        padding: 40px 4%;
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    
+    .menu-details-modal .modal-content {
+        width: 95%;
+    }
+    
+    .menu-details-img {
+        height: 250px;
+    }
+    
+    .nutrition-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .menu-categories {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .menu-category-btn {
+        width: 80%;
+        text-align: center;
+    }
+    
+    .menu-item-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .price {
+        margin-top: 5px;
+    }
+    
+    .menu-actions {
+        flex-direction: column;
+    }
+}
