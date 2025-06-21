@@ -10,6 +10,8 @@
     <script src="../js/main.js" defer></script>
     <script src="../js/reservation-handler.js" defer></script>
     <script src="../js/reservations.js" defer></script>
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <header>
@@ -44,7 +46,6 @@
             </div>
         </nav>
     </header>
-
     <main>
         <!-- Simple version without requiring special CSS -->
         <section class="auth-section">
@@ -155,7 +156,6 @@
             </div>
         </section>
     </main>
-
     <footer>
         <div class="footer-container">
             <div class="footer-section">
@@ -200,29 +200,119 @@
             <p>&copy; 2025 Waffle Heaven. All rights reserved.</p>
         </div>
     </footer>
-
     <script>
-        // Simple form handling script
+        // Initialize Supabase client
+        const supabaseUrl = 'https://your-supabase-url.supabase.co'
+        const supabaseKey = 'your-supabase-anon-key'
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+        
+        // Handle form submission with Supabase
         document.addEventListener('DOMContentLoaded', function() {
             const reservationForm = document.getElementById('reservation-form');
             
             if (reservationForm) {
-                reservationForm.addEventListener('submit', function(e) {
+                reservationForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
-                    // Get form data
-                    const name = document.getElementById('name').value;
-                    const email = document.getElementById('email').value;
-                    const date = document.getElementById('reservation-date').value;
-                    const time = document.getElementById('reservation-time').value;
-                    const guests = document.getElementById('guests').value;
+                    // Show loading indicator
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalBtnText = submitBtn.textContent;
+                    submitBtn.textContent = 'Processing...';
+                    submitBtn.disabled = true;
                     
-                    // In a real application, you would send this data to the server
-                    // For now, we'll just show an alert
-                    alert(`Thank you, ${name}! Your reservation for ${guests} people on ${date} at ${time} has been received. A confirmation email will be sent to ${email}.`);
+                    try {
+                        // Get form data
+                        const name = document.getElementById('name').value;
+                        const email = document.getElementById('email').value;
+                        const phone = document.getElementById('phone').value;
+                        const date = document.getElementById('reservation-date').value;
+                        const time = document.getElementById('reservation-time').value;
+                        const guests = document.getElementById('guests').value;
+                        const occasion = document.getElementById('occasion').value;
+                        const specialRequests = document.getElementById('special-requests').value;
+                        
+                        // Create reservation in Supabase
+                        const { data, error } = await supabase
+                            .from('reservations')
+                            .insert([
+                                { 
+                                    full_name: name,
+                                    email: email,
+                                    phone: phone,
+                                    reservation_date: date,
+                                    reservation_time: time,
+                                    guests: parseInt(guests),
+                                    occasion: occasion || null,
+                                    special_requests: specialRequests || null,
+                                    status: 'pending'
+                                }
+                            ])
+                            .select();
+                            
+                        if (error) {
+                            throw error;
+                        }
+                        
+                        // Send confirmation email (you'd implement this on the server/functions)
+                        // For now, we'll just show a success message
+                        alert(`Thank you, ${name}! Your reservation for ${guests} people on ${date} at ${time} has been received. A confirmation email will be sent to ${email}.`);
+                        
+                        // Reset form
+                        this.reset();
+                        
+                    } catch (error) {
+                        console.error('Error submitting reservation:', error);
+                        alert(`There was an error processing your reservation: ${error.message}`);
+                    } finally {
+                        // Restore button state
+                        submitBtn.textContent = originalBtnText;
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+            
+            // Initialize the date picker with today as minimum date
+            const datePicker = document.getElementById('reservation-date');
+            if (datePicker) {
+                const today = new Date().toISOString().split('T')[0];
+                datePicker.min = today;
+                
+                // Set max date (3 months from today)
+                const maxDate = new Date();
+                maxDate.setMonth(maxDate.getMonth() + 3);
+                datePicker.max = maxDate.toISOString().split('T')[0];
+            }
+            
+            // Newsletter form handling with Supabase
+            const newsletterForm = document.getElementById('newsletter-form');
+            if (newsletterForm) {
+                newsletterForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
                     
-                    // Reset form
-                    this.reset();
+                    const emailInput = this.querySelector('input[type="email"]');
+                    const email = emailInput.value;
+                    
+                    try {
+                        const { data, error } = await supabase
+                            .from('newsletter_subscribers')
+                            .insert([{ email: email }])
+                            .select();
+                            
+                        if (error) {
+                            // Handle case where email might already be subscribed
+                            if (error.code === '23505') { // Unique violation
+                                alert('You are already subscribed to our newsletter!');
+                            } else {
+                                throw error;
+                            }
+                        } else {
+                            alert('Thanks for subscribing to our newsletter!');
+                            this.reset();
+                        }
+                    } catch (error) {
+                        console.error('Error subscribing to newsletter:', error);
+                        alert(`Subscription error: ${error.message}`);
+                    }
                 });
             }
         });
