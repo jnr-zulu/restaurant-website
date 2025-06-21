@@ -291,3 +291,76 @@ function setupQuantitySelectors() {
         }
     });
 }}
+
+
+// Function to add item to cart
+function addToCart(id, name, price) {
+    // Get current cart items
+    let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    
+    // Check if item already exists in cart
+    const existingItemIndex = cartItems.findIndex(item => item.id == id);
+    
+    if (existingItemIndex !== -1) {
+        // Item exists, increase quantity
+        cartItems[existingItemIndex].quantity += 1;
+    } else {
+        // Item doesn't exist, add new item
+        cartItems.push({
+            id: id,
+            name: name,
+            price: parseFloat(price),
+            quantity: 1
+        });
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    
+    // Update cart count
+    updateCartCount();
+    
+    // Show feedback
+    showAddToCartFeedback(name);
+}
+
+// Event listeners for add to cart buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+            const price = this.getAttribute('data-price');
+            
+            addToCart(id, name, price);
+        });
+    });
+    
+    // Initialize cart count
+    updateCartCount();
+});
+
+function showAddToCartFeedback(itemName) {
+    // Create feedback element
+    const feedback = document.createElement('div');
+    feedback.className = 'cart-feedback';
+    feedback.textContent = `${itemName} added to cart!`;
+    
+    // Add to document
+    document.body.appendChild(feedback);
+    
+    // Remove after animation
+    setTimeout(() => {
+        feedback.classList.add('show');
+        
+        setTimeout(() => {
+            feedback.classList.remove('show');
+            
+            setTimeout(() => {
+                document.body.removeChild(feedback);
+            }, 300);
+        }, 2000);
+    }, 10);
+}

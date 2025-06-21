@@ -208,6 +208,82 @@ function initializeCheckout() {
     }
 }
 
+// These functions are called in your code but are not defined
+// Add them to your cart.js file
+
+// Function to update cart item quantity
+function updateCartItemQuantity(itemId, quantity) {
+    // Get current cart items
+    let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    
+    // Find the item to update
+    const itemIndex = cartItems.findIndex(item => item.id == itemId);
+    
+    if (itemIndex !== -1) {
+        // Update the quantity
+        cartItems[itemIndex].quantity = quantity;
+        
+        // Save back to localStorage
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        
+        // Update the display
+        const subtotal = cartItems[itemIndex].price * quantity;
+        const itemSubtotalElement = document.querySelector(`.quantity-input[data-id="${itemId}"]`)
+            .closest('.cart-item-actions')
+            .querySelector('.item-subtotal');
+        
+        if (itemSubtotalElement) {
+            itemSubtotalElement.textContent = `R${subtotal.toFixed(2)}`;
+        }
+        
+        // Update cart count and totals
+        updateCartCount();
+        updateCartTotal();
+    }
+}
+
+// Function to remove item from cart
+function removeFromCart(itemId) {
+    // Get current cart items
+    let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    
+    // Filter out the item to remove
+    cartItems = cartItems.filter(item => item.id != itemId);
+    
+    // Save back to localStorage
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    
+    // Update the display
+    displayCartItems();
+    updateCartCount();
+    updateCartTotal();
+}
+
+// Function to update cart count in header
+function updateCartCount() {
+    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+    
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+        cartCountElement.textContent = cartCount;
+    }
+}
+
+// Add this function to check cart data when page loads
+function debugCart() {
+    console.log('Cart data in localStorage:', localStorage.getItem('cartItems'));
+    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    console.log('Parsed cart items:', cartItems);
+    console.log('Number of items:', cartItems.length);
+}
+
+// Call debug function when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    debugCart();
+});
+
+
 function processOrder() {
     // In a real app, this would send the order to the server and process payment
     // For demo purposes, we'll just simulate a successful order
