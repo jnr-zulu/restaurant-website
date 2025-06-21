@@ -20,25 +20,61 @@ document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
 });
 
-function validateForm() {
-  // Get all form fields you need to validate
-  const email = document.getElementById('email')?.value;
-  const password = document.getElementById('password')?.value;
-  
-  // Basic validation
-  if (!email || !password) {
-    alert('Please fill out all required fields');
-    return false;
+function validateForm(formId) {
+  // Different validation based on form type
+  if (formId === 'login-form') {
+    const email = document.getElementById('login-email')?.value;
+    const password = document.getElementById('login-password')?.value;
+    
+    // Basic validation
+    if (!email || !password) {
+      alert('Please fill out all required fields');
+      return false;
+    }
+    
+    // Email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      alert('Please enter a valid email address');
+      return false;
+    }
+    
+    return true;
+  } 
+  else if (formId === 'register-form') {
+    const username = document.getElementById('register-username')?.value;
+    const email = document.getElementById('register-email')?.value;
+    const password = document.getElementById('register-password')?.value;
+    const confirmPassword = document.getElementById('confirm-password')?.value;
+    
+    // Basic validation
+    if (!username || !email || !password || !confirmPassword) {
+      alert('Please fill out all required fields');
+      return false;
+    }
+    
+    // Email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      alert('Please enter a valid email address');
+      return false;
+    }
+    
+    // Password match
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
+      return false;
+    }
+    
+    return true;
+  }
+  else if (formId === 'profile-form') {
+    // Profile form validation
+    // Add your profile validation logic here
+    return true;
   }
   
-  // Email validation
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailPattern.test(email)) {
-    alert('Please enter a valid email address');
-    return false;
-  }
-  
-  return true;
+  return false; // Unknown form
 }
 
 
