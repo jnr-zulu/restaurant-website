@@ -1,24 +1,31 @@
-// checkout.js
+// checkout.js - E-commerce checkout system with Supabase and Stripe integration
 document.addEventListener('DOMContentLoaded', function() {
+    // === INITIALIZATION ===
     // Initialize Supabase client
-    const supabaseUrl = 'YOUR_SUPABASE_URL';
-    const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+    const supabaseUrl = 'https://fweirplinqihuukrpvqd.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3ZWlycGxpbnFpaHV1a3JwdnFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0NDcwMTcsImV4cCI6MjA2NjAyMzAxN30.mP0RBD7F5vpfjmp4f7tI3VG3d40PG3lzAXuEHe_ALxg';
     const supabase = supabase.createClient(supabaseUrl, supabaseKey);
     
     // Initialize Stripe
     const stripe = Stripe('YOUR_STRIPE_PUBLISHABLE_KEY');
     const elements = stripe.elements();
     
-    // Create and mount the Card Element
+    // === UI ELEMENTS ===
+    const deliveryMethod = document.getElementById('delivery-method');
+    const deliveryInfo = document.getElementById('delivery-info');
+    const pickupInfo = document.getElementById('pickup-info');
+    const deliveryFeeEl = document.getElementById('delivery-fee');
+    const form = document.getElementById('payment-form');
+    
+    // === STRIPE SETUP ===
+    // Create and mount the Card Element with styled UI
     const cardElement = elements.create('card', {
         style: {
             base: {
                 fontSize: '16px',
                 color: '#32325d',
                 fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                '::placeholder': {
-                    color: '#aab7c4'
-                }
+                '::placeholder': { color: '#aab7c4' }
             },
             invalid: {
                 color: '#fa755a',
@@ -32,19 +39,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle realtime validation errors on the card Element
     cardElement.on('change', function(event) {
         const displayError = document.getElementById('card-errors');
-        if (event.error) {
-            displayError.textContent = event.error.message;
-        } else {
-            displayError.textContent = '';
-        }
+        displayError.textContent = event.error ? event.error.message : '';
     });
     
-    // Delivery method toggle
-    const deliveryMethod = document.getElementById('delivery-method');
-    const deliveryInfo = document.getElementById('delivery-info');
-    const pickupInfo = document.getElementById('pickup-info');
-    const deliveryFeeEl = document.getElementById('delivery-fee');
-    
+    // === EVENT LISTENERS ===
+    // Toggle between delivery and pickup options
     deliveryMethod.addEventListener('change', function() {
         if (this.value === 'delivery') {
             deliveryInfo.style.display = 'block';
@@ -58,11 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateOrderTotals();
     });
     
-    // Load cart items from local storage
-    loadCartItems();
-    
-    // Handle form submission
-    const form = document.getElementById('payment-form');
+    // Handle form submission with payment processing
     form.addEventListener('submit', async function(event) {
         event.preventDefault();
         
@@ -71,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.textContent = 'Processing...';
         
         try {
-            // Create payment method
+            // Create payment method with Stripe
             const { paymentMethod, error } = await stripe.createPaymentMethod({
                 type: 'card',
                 card: cardElement,
@@ -87,13 +82,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Call Netlify Function to process payment and store order in Supabase
+            // Process payment via serverless function
             const orderData = collectOrderData(paymentMethod.id);
             const response = await fetch('/.netlify/functions/process-payment', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderData)
             });
             
@@ -113,18 +106,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // === HELPER FUNCTIONS ===
+    // Initialize the checkout page
+    function init() {
+        loadCartItems();
+        checkAuthAndPrefillForm();
+    }
+    
+    // Collect all order data for submission
     function collectOrderData(paymentMethodId) {
-        // Get cart items
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
         
-        // Calculate totals
+        // Calculate financial totals
         const subtotal = calculateSubtotal(cartItems);
         const deliveryFee = deliveryMethod.value === 'delivery' ? 25 : 0;
         const tax = subtotal * 0.15;
         const total = subtotal + deliveryFee + tax;
         
-        // Collect form data
-        const formData = {
+        return {
             customer: {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
@@ -148,10 +147,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 paymentMethodId
             }
         };
-        
-        return formData;
     }
     
+    // Load and display cart items from localStorage
     function loadCartItems() {
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
         const cartItemsContainer = document.getElementById('cart-items');
@@ -160,15 +158,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update cart count
         cartCountElement.textContent = cartItems.reduce((total, item) => total + item.quantity, 0);
         
-        // Clear loading message
+        // Clear container and show empty message if needed
         cartItemsContainer.innerHTML = '';
-        
         if (cartItems.length === 0) {
             cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
             return;
         }
         
-        // Create HTML for cart items
+        // Render each cart item
         cartItems.forEach(item => {
             const itemElement = document.createElement('div');
             itemElement.className = 'cart-item';
@@ -187,10 +184,12 @@ document.addEventListener('DOMContentLoaded', function() {
         updateOrderTotals();
     }
     
+    // Calculate cart subtotal
     function calculateSubtotal(cartItems) {
         return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
     }
     
+    // Update order summary totals
     function updateOrderTotals() {
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
         const subtotal = calculateSubtotal(cartItems);
@@ -198,35 +197,34 @@ document.addEventListener('DOMContentLoaded', function() {
         const tax = subtotal * 0.15;
         const total = subtotal + deliveryFee + tax;
         
+        // Update display elements
         document.getElementById('subtotal-amount').textContent = `R${subtotal.toFixed(2)}`;
         document.getElementById('delivery-fee').textContent = `R${deliveryFee.toFixed(2)}`;
         document.getElementById('tax-amount').textContent = `R${tax.toFixed(2)}`;
         document.getElementById('total-amount').textContent = `R${total.toFixed(2)}`;
     }
     
+    // Handle payment errors
     function handlePaymentError(error) {
         const errorElement = document.getElementById('card-errors');
         errorElement.textContent = error.message;
         errorElement.scrollIntoView({ behavior: 'smooth' });
     }
     
+    // Handle successful order completion
     function handleOrderSuccess(orderId) {
-        // Hide the form
+        // Hide form and show success message
         document.getElementById('payment-form').style.display = 'none';
-        
-        // Show success message
         const successDiv = document.getElementById('order-success');
         successDiv.style.display = 'block';
         document.getElementById('order-reference').textContent = orderId;
         
-        // Clear cart
+        // Clear cart and scroll to success message
         localStorage.removeItem('cartItems');
-        
-        // Scroll to success message
         successDiv.scrollIntoView({ behavior: 'smooth' });
     }
     
-    // Check if user is logged in and prefill form
+    // Check authentication status and prefill form if logged in
     async function checkAuthAndPrefillForm() {
         const { data: { user } } = await supabase.auth.getUser();
         
@@ -251,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Update user menu
+            // Update user menu for logged-in state
             document.getElementById('user-menu').innerHTML = `
                 <a href="account.html" class="account-link">My Account</a>
                 <button id="logout-button" class="logout-button">Logout</button>
@@ -263,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.location.href = 'index.html';
             });
         } else {
-            // User is not logged in
+            // Show login/signup options for logged-out state
             document.getElementById('user-menu').innerHTML = `
                 <a href="login.html" class="login-link">Login</a>
                 <a href="signup.html" class="signup-link">Sign Up</a>
@@ -271,6 +269,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Call auth check function
-    checkAuthAndPrefillForm();
+    // Initialize the page
+    init();
 });
