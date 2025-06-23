@@ -1,9 +1,18 @@
-// orders.js
+/**
+ * Shopping Cart Management Script
+ * Handles the entire shopping cart functionality including:
+ * - Adding/updating items in cart
+ * - Managing cart display and counts
+ * - Handling checkout process
+ */
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize cart from localStorage or create empty cart
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     
-    // Update cart count in header
+    /**
+     * Updates the cart count display in the header
+     */
     function updateCartCount() {
         const cartCount = document.getElementById('cart-count');
         if (cartCount) {
@@ -12,55 +21,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Initialize cart count
-    updateCartCount();
-    
-    // Add event listeners to add-to-cart buttons
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('add-to-cart')) {
-            const button = e.target;
-            const id = button.dataset.id;
-            const name = button.dataset.name;
-            const price = parseFloat(button.dataset.price);
-            const quantityInput = button.closest('.menu-item-content').querySelector('.quantity-input');
-            const quantity = parseInt(quantityInput.value);
-            
-            addToCart(id, name, price, quantity);
-        }
-    });
-    
-    // Function to add items to cart
-    function addToCart(id, name, price, quantity) {
-        // Check if item already exists in cart
-        const existingItemIndex = cart.findIndex(item => item.id === id);
-        
-        if (existingItemIndex > -1) {
-            // Update quantity if item exists
-            cart[existingItemIndex].quantity += quantity;
-        } else {
-            // Add new item to cart
-            cart.push({
-                id,
-                name,
-                price,
-                quantity
-            });
-        }
-        
-        // Save cart to localStorage
-        localStorage.setItem('cart', JSON.stringify(cart));
-        
-        // Update cart count
-        updateCartCount();
-        
-        // Update cart preview
-        updateCartPreview();
-        
-        // Show confirmation message
-        alert(`${quantity} x ${name} added to cart!`);
-    }
-    
-    // Function to update cart preview
+    /**
+     * Updates the cart preview panel with current items
+     */
     function updateCartPreview() {
         const cartPreviewItems = document.getElementById('cart-preview-items');
         const cartPreviewTotal = document.getElementById('cart-preview-total');
@@ -94,10 +57,57 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Initial update of cart preview
+    /**
+     * Adds an item to the cart or updates quantity if already exists
+     * @param {string} id - Product ID
+     * @param {string} name - Product name
+     * @param {number} price - Product price
+     * @param {number} quantity - Quantity to add
+     */
+    function addToCart(id, name, price, quantity) {
+        // Check if item already exists in cart
+        const existingItemIndex = cart.findIndex(item => item.id === id);
+        
+        if (existingItemIndex > -1) {
+            // Update quantity if item exists
+            cart[existingItemIndex].quantity += quantity;
+        } else {
+            // Add new item to cart
+            cart.push({ id, name, price, quantity });
+        }
+        
+        // Save cart to localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Update UI elements
+        updateCartCount();
+        updateCartPreview();
+        
+        // Show confirmation message
+        alert(`${quantity} x ${name} added to cart!`);
+    }
+    
+    // Initialize cart UI
+    updateCartCount();
     updateCartPreview();
     
-    // Handle quantity button clicks
+    // EVENT LISTENERS
+    
+    // Add to cart button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('add-to-cart')) {
+            const button = e.target;
+            const id = button.dataset.id;
+            const name = button.dataset.name;
+            const price = parseFloat(button.dataset.price);
+            const quantityInput = button.closest('.menu-item-content').querySelector('.quantity-input');
+            const quantity = parseInt(quantityInput.value);
+            
+            addToCart(id, name, price, quantity);
+        }
+    });
+    
+    // Quantity adjustment button clicks
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('quantity-btn')) {
             const button = e.target;
@@ -114,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Handle checkout process
+    // Checkout process
     const checkoutBtn = document.querySelector('.checkout-btn');
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', async function(e) {
