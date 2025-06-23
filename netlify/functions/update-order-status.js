@@ -1,3 +1,13 @@
+/**
+ * Serverless function to update order status in the restaurant ordering system
+ * 
+ * This function:
+ * - Validates user authentication and authorization
+ * - Updates order status in the database
+ * - Records status changes in order history
+ * - Manages loyalty points for completed orders
+ */
+
 // netlify/functions/update-order-status.js
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
@@ -6,6 +16,9 @@ const jwt = require('jsonwebtoken');
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Valid order statuses
+const VALID_STATUSES = ['received', 'preparing', 'ready', 'completed', 'cancelled'];
 
 exports.handler = async (event, context) => {
   // Set CORS headers
@@ -18,10 +31,7 @@ exports.handler = async (event, context) => {
 
   // Handle preflight requests
   if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 204,
-      headers
-    };
+    return { statusCode: 204, headers };
   }
 
   // Only allow POST requests
@@ -47,48 +57,20 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Verify authorization
-    const authHeader = event.headers.authorization || '';
-    const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
-    
-    if (!token) {
-      return {
-        statusCode: 401,
-        headers,
-        body: JSON.stringify({ error: 'Unauthorized - Authentication required' })
-      };
-    }
-
-    // Verify JWT token
-    let decodedToken;
-    try {
-      decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-      return {
-        statusCode: 401,
-        headers,
-        body: JSON.stringify({ error: 'Unauthorized - Invalid token' })
-      };
-    }
-
-    // Check if user has staff role
-    if (!decodedToken.roles || !decodedToken.roles.includes('staff')) {
-      return {
-        statusCode: 403,
-        headers,
-        body: JSON.stringify({ error: 'Forbidden - Staff access required' })
-      };
+    // Authenticate user
+    const decodedToken = await authenticateUser(event.headers.authorization, headers);
+    if (!decodedToken.success) {
+      return decodedToken.response;
     }
 
     // Validate status value
-    const validStatuses = ['received', 'preparing', 'ready', 'completed', 'cancelled'];
-    if (!validStatuses.includes(newStatus)) {
+    if (!VALID_STATUSES.includes(newStatus)) {
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({ 
           error: 'Invalid status value', 
-          validValues: validStatuses 
+          validValues: VALID_STATUSES 
         })
       };
     }
@@ -117,48 +99,12 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Add status update to order history
-    const { error: historyError } = await supabase
-      .from('order_status_history')
-      .insert({
-        order_id: orderId,
-        status: newStatus,
-        changed_by: decodedToken.userId,
-        changed_at: new Date()
-      });
+    // Record status change in history
+    await recordStatusChange(orderId, newStatus, decodedToken.userId);
 
-    if (historyError) {
-      console.error('Error adding to order history:', historyError);
-      // Continue execution even if history update fails
-    }
-
-    // If order is completed or cancelled, handle any additional logic
-    if (newStatus === 'completed' || newStatus === 'cancelled') {
-      // For completed orders, update customer loyalty points
-      if (newStatus === 'completed') {
-        // Get order details
-        const { data: orderDetails } = await supabase
-          .from('orders')
-          .select('customer_id, total_amount')
-          .eq('id', orderId)
-          .single();
-        
-        if (orderDetails && orderDetails.customer_id) {
-          // Add loyalty points (1 point per $10 spent)
-          const pointsToAdd = Math.floor(orderDetails.total_amount / 10);
-          
-          const { error: loyaltyError } = await supabase
-            .from('customers')
-            .update({ 
-              loyalty_points: supabase.rpc('increment_points', { points: pointsToAdd }) 
-            })
-            .eq('id', orderDetails.customer_id);
-            
-          if (loyaltyError) {
-            console.error('Error updating loyalty points:', loyaltyError);
-          }
-        }
-      }
+    // Handle post-update actions (loyalty points, etc.)
+    if (newStatus === 'completed') {
+      await processCompletedOrder(orderId);
     }
 
     // Return success response
@@ -186,3 +132,105 @@ exports.handler = async (event, context) => {
     };
   }
 };
+
+/**
+ * Authenticate and authorize the user
+ * @param {string} authHeader - Authorization header
+ * @param {object} headers - Response headers
+ * @returns {object} Authentication result
+ */
+async function authenticateUser(authHeader, headers) {
+  // Extract token
+  authHeader = authHeader || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
+  
+  if (!token) {
+    return {
+      success: false,
+      response: {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ error: 'Unauthorized - Authentication required' })
+      }
+    };
+  }
+
+  // Verify JWT token
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Check if user has staff role
+    if (!decodedToken.roles || !decodedToken.roles.includes('staff')) {
+      return {
+        success: false,
+        response: {
+          statusCode: 403,
+          headers,
+          body: JSON.stringify({ error: 'Forbidden - Staff access required' })
+        }
+      };
+    }
+    
+    return { success: true, userId: decodedToken.userId };
+  } catch (error) {
+    return {
+      success: false,
+      response: {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ error: 'Unauthorized - Invalid token' })
+      }
+    };
+  }
+}
+
+/**
+ * Record status change in order history
+ * @param {string} orderId - Order ID
+ * @param {string} status - New status
+ * @param {string} userId - User who changed the status
+ */
+async function recordStatusChange(orderId, status, userId) {
+  const { error } = await supabase
+    .from('order_status_history')
+    .insert({
+      order_id: orderId,
+      status,
+      changed_by: userId,
+      changed_at: new Date()
+    });
+
+  if (error) {
+    console.error('Error adding to order history:', error);
+    // Continue execution even if history update fails
+  }
+}
+
+/**
+ * Process completed order (add loyalty points)
+ * @param {string} orderId - Order ID
+ */
+async function processCompletedOrder(orderId) {
+  // Get order details
+  const { data: orderDetails } = await supabase
+    .from('orders')
+    .select('customer_id, total_amount')
+    .eq('id', orderId)
+    .single();
+  
+  if (orderDetails && orderDetails.customer_id) {
+    // Add loyalty points (1 point per $10 spent)
+    const pointsToAdd = Math.floor(orderDetails.total_amount / 10);
+    
+    const { error } = await supabase
+      .from('customers')
+      .update({ 
+        loyalty_points: supabase.rpc('increment_points', { points: pointsToAdd }) 
+      })
+      .eq('id', orderDetails.customer_id);
+      
+    if (error) {
+      console.error('Error updating loyalty points:', error);
+    }
+  }
+}
