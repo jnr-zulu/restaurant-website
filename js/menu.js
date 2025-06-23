@@ -1,3 +1,6 @@
+/**
+ * Initialize all functionality when DOM is fully loaded
+ */
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize menu functionality
     initializeMenu();
@@ -12,12 +15,19 @@ document.addEventListener('DOMContentLoaded', function() {
     setupQuantitySelectors();
 });
 
+/**
+ * Initialize the menu components
+ * Could be expanded to load menu items dynamically
+ */
 function initializeMenu() {
-    // Could load menu items dynamically from an API here
-    // For now, we're using static HTML
+    // Currently using static HTML, but could load from API in future
     console.log('Menu initialized');
 }
 
+/**
+ * Setup event listeners for add to cart buttons
+ * Retrieves item details and adds them to the cart
+ */
 function setupAddToCartButtons() {
     const addToCartButtons = document.querySelectorAll('.add-to-cart');
     
@@ -25,7 +35,7 @@ function setupAddToCartButtons() {
         button.addEventListener('click', function() {
             const itemId = this.getAttribute('data-id');
             const name = this.getAttribute('data-name');
-            const price = parseFloat(this.getAttribute('data-price')); // Now in Rands
+            const price = parseFloat(this.getAttribute('data-price')); // Price in Rands
             
             // Get quantity if available (for order-online page)
             let quantity = 1;
@@ -34,12 +44,15 @@ function setupAddToCartButtons() {
                 quantity = parseInt(quantityInput.value);
             }
             
-            // Add to cart (price in Rands)
+            // Add to cart
             addToCart(itemId, name, price, quantity);
         });
     });
 }
 
+/**
+ * Setup category navigation with smooth scrolling and highlighting
+ */
 function setupCategoryNavigation() {
     const categoryLinks = document.querySelectorAll('.category-nav a');
     
@@ -50,6 +63,7 @@ function setupCategoryNavigation() {
         
         sections.forEach(section => {
             const sectionTop = section.offsetTop;
+            // Note: sectionHeight is defined but not used - could be removed
             const sectionHeight = section.clientHeight;
             
             if (window.pageYOffset >= (sectionTop - 150)) {
@@ -57,6 +71,7 @@ function setupCategoryNavigation() {
             }
         });
         
+        // Update active class on navigation links
         categoryLinks.forEach(link => {
             link.classList.remove('active');
             if (link.getAttribute('href') === `#${currentSection}`) {
@@ -74,7 +89,7 @@ function setupCategoryNavigation() {
             const targetSection = document.getElementById(targetId);
             
             if (targetSection) {
-                const offsetTop = targetSection.offsetTop - 120;
+                const offsetTop = targetSection.offsetTop - 120; // Offset for header
                 
                 window.scrollTo({
                     top: offsetTop,
@@ -89,6 +104,9 @@ function setupCategoryNavigation() {
     });
 }
 
+/**
+ * Setup quantity selectors with increment/decrement functionality
+ */
 function setupQuantitySelectors() {
     const quantityControls = document.querySelectorAll('.quantity-controls');
     
@@ -98,6 +116,7 @@ function setupQuantitySelectors() {
         const input = control.parentElement.querySelector('.quantity-input');
         
         if (decreaseBtn && increaseBtn && input) {
+            // Decrease quantity (minimum: 1)
             decreaseBtn.addEventListener('click', function() {
                 let value = parseInt(input.value);
                 if (value > 1) {
@@ -105,11 +124,13 @@ function setupQuantitySelectors() {
                 }
             });
             
+            // Increase quantity
             increaseBtn.addEventListener('click', function() {
                 let value = parseInt(input.value);
                 input.value = value + 1;
             });
             
+            // Validate manual input (ensure it's at least 1)
             input.addEventListener('change', function() {
                 let value = parseInt(this.value);
                 if (value < 1 || isNaN(value)) {

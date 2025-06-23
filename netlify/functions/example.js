@@ -1,9 +1,7 @@
-// netlify/functions/example.js
 const { supabase } = require('./utils/supabase')
 
 exports.handler = async (event, context) => {
   try {
-    // Example: Query data from Supabase
     const { data, error } = await supabase
       .from('your_table')
       .select('*')

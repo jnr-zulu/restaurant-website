@@ -1,3 +1,4 @@
+// Event listener for when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Display cart items if on cart page
     if (window.location.href.includes('cart.html')) {
@@ -9,9 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.location.href.includes('checkout.html')) {
         initializeCheckout();
     }
+    
+    // Debug cart data when page loads
+    debugCart();
 });
 
-// Add this function to your cart.js file
+// Validate cart items with server to ensure data integrity
 async function validateCart() {
   try {
     const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
@@ -47,7 +51,7 @@ async function validateCart() {
   }
 }
 
-// Modify your displayCartItems function to use validateCart
+// Display cart items on the cart page with server validation
 async function displayCartItems() {
   const cartItemsContainer = document.getElementById('cart-items');
   const emptyCartMessage = document.getElementById('empty-cart-message');
@@ -63,7 +67,7 @@ async function displayCartItems() {
   // Clear previous content
   cartItemsContainer.innerHTML = '';
   
-  // Show/hide empty cart message
+  // Show/hide empty cart message and checkout button
   if (cartItems.length === 0) {
     if (emptyCartMessage) {
       emptyCartMessage.style.display = 'block';
@@ -82,117 +86,92 @@ async function displayCartItems() {
       checkoutBtn.style.display = 'block';
     }
   }
-}
-
-
-
-
-function displayCartItems() {
-    const cartItemsContainer = document.getElementById('cart-items');
-    const emptyCartMessage = document.getElementById('empty-cart-message');
-    
-    if (!cartItemsContainer) return;
-    
-    // Get cart items from localStorage
-    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-    
-    // Clear previous content
-    cartItemsContainer.innerHTML = '';
-    
-    // Show/hide empty cart message
-    if (cartItems.length === 0) {
-        if (emptyCartMessage) {
-            emptyCartMessage.style.display = 'block';
-        }
-        document.getElementById('checkout-btn').style.display = 'none';
-        return;
-    } else {
-        if (emptyCartMessage) {
-            emptyCartMessage.style.display = 'none';
-        }
-        document.getElementById('checkout-btn').style.display = 'block';
-    }
-    
-    // Create HTML for each cart item
-    cartItems.forEach(item => {
-        const cartItemElement = document.createElement('div');
-        cartItemElement.className = 'cart-item';
-        cartItemElement.innerHTML = `
-            <div class="cart-item-img">
-                <img src="../img/menu/${item.id}.jpg" alt="${item.name}" onerror="this.src='../img/menu/default.jpg'">
+  
+  // Create HTML for each cart item
+  cartItems.forEach(item => {
+    const cartItemElement = document.createElement('div');
+    cartItemElement.className = 'cart-item';
+    cartItemElement.innerHTML = `
+        <div class="cart-item-img">
+            <img src="../img/menu/${item.id}.jpg" alt="${item.name}" onerror="this.src='../img/menu/default.jpg'">
+        </div>
+        <div class="cart-item-details">
+            <h3>${item.name}</h3>
+            <p class="item-price">R${item.price.toFixed(2)}</p>
+        </div>
+        <div class="cart-item-actions">
+            <div class="quantity-selector">
+                <button class="quantity-btn decrease">-</button>
+                <input type="number" class="quantity-input" value="${item.quantity}" min="1" data-id="${item.id}">
+                <button class="quantity-btn increase">+</button>
             </div>
-            <div class="cart-item-details">
-                <h3>${item.name}</h3>
-                <p class="item-price">R${item.price.toFixed(2)}</p>
-            </div>
-            <div class="cart-item-actions">
-                <div class="quantity-selector">
-                    <button class="quantity-btn decrease">-</button>
-                    <input type="number" class="quantity-input" value="${item.quantity}" min="1" data-id="${item.id}">
-                    <button class="quantity-btn increase">+</button>
-                </div>
-                <p class="item-subtotal">R${(item.price * item.quantity).toFixed(2)}</p>
-                <button class="remove-item-btn" data-id="${item.id}">Remove</button>
-            </div>
-        `;
+            <p class="item-subtotal">R${(item.price * item.quantity).toFixed(2)}</p>
+            <button class="remove-item-btn" data-id="${item.id}">Remove</button>
+        </div>
+    `;
+    
+    cartItemsContainer.appendChild(cartItemElement);
+  });
+  
+  // Add event listeners to quantity buttons
+  const decreaseButtons = document.querySelectorAll('.quantity-btn.decrease');
+  const increaseButtons = document.querySelectorAll('.quantity-btn.increase');
+  const quantityInputs = document.querySelectorAll('.quantity-input');
+  const removeButtons = document.querySelectorAll('.remove-item-btn');
+  
+  // Decrease quantity button event listener
+  decreaseButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        const input = this.parentElement.querySelector('.quantity-input');
+        const itemId = input.getAttribute('data-id');
+        let value = parseInt(input.value);
         
-        cartItemsContainer.appendChild(cartItemElement);
-    });
-    
-    // Add event listeners to quantity buttons
-    const decreaseButtons = document.querySelectorAll('.quantity-btn.decrease');
-    const increaseButtons = document.querySelectorAll('.quantity-btn.increase');
-    const quantityInputs = document.querySelectorAll('.quantity-input');
-    const removeButtons = document.querySelectorAll('.remove-item-btn');
-    
-    decreaseButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const input = this.parentElement.querySelector('.quantity-input');
-            const itemId = input.getAttribute('data-id');
-            let value = parseInt(input.value);
-            
-            if (value > 1) {
-                value--;
-                input.value = value;
-                updateCartItemQuantity(itemId, value);
-            }
-        });
-    });
-    
-    increaseButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const input = this.parentElement.querySelector('.quantity-input');
-            const itemId = input.getAttribute('data-id');
-            let value = parseInt(input.value);
-            
-            value++;
+        if (value > 1) {
+            value--;
             input.value = value;
             updateCartItemQuantity(itemId, value);
-        });
+        }
     });
-    
-    quantityInputs.forEach(input => {
-        input.addEventListener('change', function() {
-            const itemId = this.getAttribute('data-id');
-            let value = parseInt(this.value);
-            
-            if (value < 1 || isNaN(value)) {
-                value = 1;
-                this.value = 1;
-            }
-            
-            updateCartItemQuantity(itemId, value);
-        });
+  });
+  
+  // Increase quantity button event listener
+  increaseButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        const input = this.parentElement.querySelector('.quantity-input');
+        const itemId = input.getAttribute('data-id');
+        let value = parseInt(input.value);
+        
+        value++;
+        input.value = value;
+        updateCartItemQuantity(itemId, value);
     });
-    
-    removeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const itemId = this.getAttribute('data-id');
-            removeFromCart(itemId);
-        });
+  });
+  
+  // Quantity input field event listener
+  quantityInputs.forEach(input => {
+    input.addEventListener('change', function() {
+        const itemId = this.getAttribute('data-id');
+        let value = parseInt(this.value);
+        
+        if (value < 1 || isNaN(value)) {
+            value = 1;
+            this.value = 1;
+        }
+        
+        updateCartItemQuantity(itemId, value);
     });
+  });
+  
+  // Remove item button event listener
+  removeButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        const itemId = this.getAttribute('data-id');
+        removeFromCart(itemId);
+    });
+  });
 }
 
+// Calculate and update cart totals (subtotal, tax, total)
 function updateCartTotal() {
     const subtotalElement = document.getElementById('cart-subtotal');
     const taxElement = document.getElementById('cart-tax');
@@ -228,6 +207,7 @@ function updateCartTotal() {
     localStorage.setItem('orderSummary', JSON.stringify(orderSummary));
 }
 
+// Initialize the checkout page with order details
 function initializeCheckout() {
     // Get order summary from localStorage
     const orderSummary = JSON.parse(localStorage.getItem('orderSummary')) || {
@@ -282,13 +262,9 @@ function initializeCheckout() {
             processOrder();
         });
     }
-    
 }
 
-// These functions are called in your code but are not defined
-// Add them to your cart.js file
-
-// Function to update cart item quantity
+// Update the quantity of an item in the cart
 function updateCartItemQuantity(itemId, quantity) {
     // Get current cart items
     let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
@@ -319,7 +295,7 @@ function updateCartItemQuantity(itemId, quantity) {
     }
 }
 
-// Function to remove item from cart
+// Remove an item from the cart
 function removeFromCart(itemId) {
     // Get current cart items
     let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
@@ -336,7 +312,7 @@ function removeFromCart(itemId) {
     updateCartTotal();
 }
 
-// Function to update cart count in header
+// Update the cart count in the header
 function updateCartCount() {
     const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
     const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
@@ -347,7 +323,7 @@ function updateCartCount() {
     }
 }
 
-// Add this function to check cart data when page loads
+// Debug function to log cart data
 function debugCart() {
     console.log('Cart data in localStorage:', localStorage.getItem('cartItems'));
     const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
@@ -355,16 +331,8 @@ function debugCart() {
     console.log('Number of items:', cartItems.length);
 }
 
-// Call debug function when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    debugCart();
-});
-
-
+// Process the order and save order details
 function processOrder() {
-    // In a real app, this would send the order to the server and process payment
-    // For demo purposes, we'll just simulate a successful order
-    
     // Get order details
     const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
     const orderSummary = JSON.parse(localStorage.getItem('orderSummary')) || {};
@@ -373,7 +341,7 @@ function processOrder() {
     const form = document.getElementById('checkout-form');
     const formData = new FormData(form);
     
-    // Create order object
+    // Create order object with all relevant information
     const order = {
         id: Date.now(),
         items: cartItems,
@@ -413,12 +381,13 @@ function processOrder() {
     showOrderConfirmation(order);
 }
 
+// Display order confirmation to the user
 function showOrderConfirmation(order) {
-    // Redirect to confirmation page or show confirmation message
+    // Get checkout container
     const checkoutContainer = document.querySelector('.checkout-container');
     
     if (checkoutContainer) {
-        // Create confirmation message
+        // Create confirmation message with order details
         const confirmationDiv = document.createElement('div');
         confirmationDiv.className = 'order-confirmation';
         

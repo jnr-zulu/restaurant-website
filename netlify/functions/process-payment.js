@@ -1,4 +1,11 @@
 // netlify/functions/process-payment.js
+/**
+ * This serverless function processes payments for Waffle Heaven:
+ * 1. Validates and processes payment through Stripe
+ * 2. Stores order details in Supabase database
+ * 3. Sends confirmation email to customer
+ */
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
 
@@ -25,6 +32,7 @@ exports.handler = async function(event, context) {
     }
     
     try {
+        // Parse incoming request data
         const data = JSON.parse(event.body);
         const { customer, deliveryMethod, deliveryInfo, order, payment } = data;
         
@@ -43,10 +51,10 @@ exports.handler = async function(event, context) {
         });
         
         if (paymentIntent.status === 'succeeded') {
-            // Generate order reference
+            // Generate unique order reference
             const orderReference = generateOrderReference();
             
-            // Store order in Supabase
+            // Store order details in Supabase database
             const { data: orderData, error: orderError } = await supabase
                 .from('orders')
                 .insert([
@@ -81,7 +89,7 @@ exports.handler = async function(event, context) {
                 };
             }
             
-            // Send order confirmation email
+            // Send confirmation email to customer
             await sendOrderConfirmationEmail(customer.email, {
                 orderReference,
                 customerName: customer.name,
@@ -89,7 +97,7 @@ exports.handler = async function(event, context) {
                 total: order.total
             });
             
-            // Return success response
+            // Return success response to client
             return {
                 statusCode: 200,
                 headers,
@@ -112,6 +120,7 @@ exports.handler = async function(event, context) {
             };
         }
     } catch (error) {
+        // Log and return any errors that occur
         console.error('Function error:', error);
         return {
             statusCode: 500,
@@ -124,8 +133,13 @@ exports.handler = async function(event, context) {
     }
 };
 
+/**
+ * Generates a unique order reference in the format WH-YYYYMMDD-XXXX
+ * WH: Waffle Heaven prefix
+ * YYYYMMDD: Current date
+ * XXXX: Random 4-digit number
+ */
 function generateOrderReference() {
-    // Generate a random order reference in the format WH-YYYYMMDD-XXXX
     const now = new Date();
     const date = now.toISOString().slice(0, 10).replace(/-/g, '');
     const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
@@ -133,11 +147,16 @@ function generateOrderReference() {
     return `WH-${date}-${random}`;
 }
 
+/**
+ * Sends order confirmation email to customer
+ * This is a placeholder that would be replaced with actual email service integration
+ * @param {string} email - Customer's email address
+ * @param {object} orderDetails - Details about the order for email content
+ */
 async function sendOrderConfirmationEmail(email, orderDetails) {
     // This function would integrate with your email service provider
     // For example, using Mailjet, SendGrid, etc.
     
-    // This is a placeholder implementation
     console.log('Sending order confirmation email to:', email);
     console.log('Order details:', orderDetails);
     

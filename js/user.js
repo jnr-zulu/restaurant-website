@@ -1,91 +1,133 @@
+/**
+ * Authentication and User Management System
+ * This module handles user authentication, registration, profile management, and order display.
+ * 
+ * @author Patrick-Jnr Zulu
+ * @version 1.0
+ */
+
+// Initialize all forms and check authentication when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize login form
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        initializeLoginForm();
-    }
-    
-    // Initialize register form
-    const registerForm = document.getElementById('register-form');
-    if (registerForm) {
-        initializeRegisterForm();
-    }
-    
-    // Initialize profile page
-    if (window.location.href.includes('profile.html')) {
-        initializeProfilePage();
-    }
+    // Setup forms based on page context
+    initializeForms();
     
     // Check authentication status for protected pages
     checkAuth();
 });
 
-function validateForm(formId) {
-  // Different validation based on form type
-  if (formId === 'login-form') {
-    const email = document.getElementById('login-email')?.value;
-    const password = document.getElementById('login-password')?.value;
-    
-    // Basic validation
-    if (!email || !password) {
-      alert('Please fill out all required fields');
-      return false;
+/**
+ * Initialize all forms based on the current page
+ */
+function initializeForms() {
+    // Initialize login form if present
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        initializeLoginForm();
     }
     
-    // Email validation
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-      alert('Please enter a valid email address');
-      return false;
+    // Initialize register form if present
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+        initializeRegisterForm();
     }
     
-    return true;
-  } 
-  else if (formId === 'register-form') {
-    const username = document.getElementById('register-username')?.value;
-    const email = document.getElementById('register-email')?.value;
-    const password = document.getElementById('register-password')?.value;
-    const confirmPassword = document.getElementById('confirm-password')?.value;
-    
-    // Basic validation
-    if (!username || !email || !password || !confirmPassword) {
-      alert('Please fill out all required fields');
-      return false;
+    // Initialize profile page if on profile page
+    if (window.location.href.includes('profile.html')) {
+        initializeProfilePage();
     }
-    
-    // Email validation
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-      alert('Please enter a valid email address');
-      return false;
-    }
-    
-    // Password match
-    if (password !== confirmPassword) {
-      alert('Passwords do not match');
-      return false;
-    }
-    
-    return true;
-  }
-  else if (formId === 'profile-form') {
-    // Profile form validation
-    // Add your profile validation logic here
-    return true;
-  }
-  
-  return false; // Unknown form
 }
 
+// Email validation regex pattern - used across multiple validation functions
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/**
+ * Validate form inputs based on form type
+ * @param {string} formId - ID of the form to validate
+ * @returns {boolean} - Whether the form is valid
+ */
+function validateForm(formId) {
+  // Different validation based on form type
+  switch(formId) {
+    case 'login-form':
+      return validateLoginForm();
+      
+    case 'register-form':
+      return validateRegistrationForm();
+      
+    case 'profile-form':
+      // Profile form validation logic to be implemented
+      return true;
+      
+    default:
+      console.warn(`Unknown form type: ${formId}`);
+      return false;
+  }
+}
 
+/**
+ * Validate login form inputs
+ * @returns {boolean} - Whether the form is valid
+ */
+function validateLoginForm() {
+  const email = document.getElementById('login-email')?.value;
+  const password = document.getElementById('login-password')?.value;
+  
+  // Check required fields
+  if (!email || !password) {
+    alert('Please fill out all required fields');
+    return false;
+  }
+  
+  // Validate email format
+  if (!EMAIL_PATTERN.test(email)) {
+    alert('Please enter a valid email address');
+    return false;
+  }
+  
+  return true;
+}
+
+/**
+ * Validate registration form inputs
+ * @returns {boolean} - Whether the form is valid
+ */
+function validateRegistrationForm() {
+  const username = document.getElementById('register-username')?.value;
+  const email = document.getElementById('register-email')?.value;
+  const password = document.getElementById('register-password')?.value;
+  const confirmPassword = document.getElementById('confirm-password')?.value;
+  
+  // Check required fields
+  if (!username || !email || !password || !confirmPassword) {
+    alert('Please fill out all required fields');
+    return false;
+  }
+  
+  // Validate email format
+  if (!EMAIL_PATTERN.test(email)) {
+    alert('Please enter a valid email address');
+    return false;
+  }
+  
+  // Check password match
+  if (password !== confirmPassword) {
+    alert('Passwords do not match');
+    return false;
+  }
+  
+  return true;
+}
+
+/**
+ * Initialize the login form with event listeners
+ */
 function initializeLoginForm() {
     const loginForm = document.getElementById('login-form');
     
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Validate form
+        // Validate form first
         if (!validateForm('login-form')) {
             return;
         }
@@ -93,10 +135,8 @@ function initializeLoginForm() {
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         
-        // In a real app, this would validate credentials with the server
-        // For demo purposes, we'll check against hardcoded values and localStorage
-        
-        // Check admin credentials
+        // Check admin credentials - hardcoded for demonstration
+        // NOTE: In production, use secure authentication methods
         if (email === 'admin@waffleheaven.com' && password === '0824669786Jnr') {
             login({
                 id: 'admin',
@@ -108,7 +148,8 @@ function initializeLoginForm() {
             return;
         }
         
-        // Check staff credentials
+        // Check staff credentials - hardcoded for demonstration
+        // NOTE: In production, use secure authentication methods
         if (email === 'staff@waffleheaven.com' && password === '0824669786Jnr') {
             login({
                 id: 'staff',
@@ -120,12 +161,12 @@ function initializeLoginForm() {
             return;
         }
         
-        // Check registered users
+        // Check registered users in localStorage
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const user = users.find(u => u.email === email);
         
         if (user && user.password === password) {
-            // Remove password before storing in session
+            // Remove password before storing in session for security
             const { password, ...userWithoutPassword } = user;
             login(userWithoutPassword);
             window.location.href = '../index.html';
@@ -137,13 +178,16 @@ function initializeLoginForm() {
     });
 }
 
+/**
+ * Initialize the registration form with event listeners
+ */
 function initializeRegisterForm() {
     const registerForm = document.getElementById('register-form');
     
     registerForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Validate form
+        // Validate form first
         if (!validateForm('register-form')) {
             return;
         }
@@ -151,13 +195,6 @@ function initializeRegisterForm() {
         const username = document.getElementById('register-username').value;
         const email = document.getElementById('register-email').value;
         const password = document.getElementById('register-password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
-        
-        // Check if passwords match
-        if (password !== confirmPassword) {
-            showFormError(registerForm, 'Passwords do not match');
-            return;
-        }
         
         // Get existing users
         let users = JSON.parse(localStorage.getItem('users')) || [];
@@ -174,23 +211,21 @@ function initializeRegisterForm() {
             return;
         }
         
-        // Create new user
+        // Create new user object with timestamp for unique ID
         const newUser = {
             id: Date.now().toString(),
             username: username,
             email: email,
-            password: password,
+            password: password, // NOTE: In production, hash passwords before storing
             role: 'customer',
             createdAt: new Date().toISOString()
         };
         
-        // Add to users array
-        users.push(newUser);
-        
         // Save to localStorage
+        users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
         
-        // Login the new user
+        // Login the new user (remove password for security)
         const { password: pwd, ...userWithoutPassword } = newUser;
         login(userWithoutPassword);
         
@@ -199,11 +234,15 @@ function initializeRegisterForm() {
     });
 }
 
+/**
+ * Initialize the profile page with user data and event listeners
+ */
 function initializeProfilePage() {
     // Check if user is logged in
     const user = JSON.parse(localStorage.getItem('currentUser'));
     
     if (!user) {
+        // Redirect to login if not authenticated
         window.location.href = 'login.html';
         return;
     }
@@ -221,73 +260,86 @@ function initializeProfilePage() {
         document.getElementById('edit-email').value = user.email;
         
         // Handle form submission
-        profileForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Validate form
-            if (!validateForm('profile-form')) {
-                return;
-            }
-            
-            const username = document.getElementById('edit-username').value;
-            const email = document.getElementById('edit-email').value;
-            const currentPassword = document.getElementById('current-password').value;
-            const newPassword = document.getElementById('new-password').value;
-            
-            // Get all users
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            
-            // Find current user
-            const userIndex = users.findIndex(u => u.id === user.id);
-            
-            if (userIndex === -1) {
-                showFormError(profileForm, 'User not found');
-                return;
-            }
-            
-            // Check current password
-            if (currentPassword && currentPassword !== users[userIndex].password) {
-                showFormError(profileForm, 'Current password is incorrect');
-                return;
-            }
-            
-            // Check if email is already taken by another user
-            if (email !== user.email && users.some(u => u.email === email && u.id !== user.id)) {
-                showFormError(profileForm, 'Email already registered by another user');
-                return;
-            }
-            
-            // Check if username is already taken by another user
-            if (username !== user.username && users.some(u => u.username === username && u.id !== user.id)) {
-                showFormError(profileForm, 'Username already taken by another user');
-                return;
-            }
-            
-            // Update user data
-            users[userIndex].username = username;
-            users[userIndex].email = email;
-            
-            // Update password if provided
-            if (newPassword) {
-                users[userIndex].password = newPassword;
-            }
-            
-            // Save updated users to localStorage
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            // Update current user in session
-            const { password, ...updatedUser } = users[userIndex];
-            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-            
-            // Show success message
-            showFormSuccess(profileForm, 'Profile updated successfully');
-        });
+        profileForm.addEventListener('submit', handleProfileUpdate);
     }
     
     // Display user orders
     displayUserOrders();
 }
 
+/**
+ * Handle profile form update submission
+ * @param {Event} e - The form submission event
+ */
+function handleProfileUpdate(e) {
+    e.preventDefault();
+    
+    // Get current user
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const profileForm = document.getElementById('profile-form');
+    
+    // Validate form
+    if (!validateForm('profile-form')) {
+        return;
+    }
+    
+    const username = document.getElementById('edit-username').value;
+    const email = document.getElementById('edit-email').value;
+    const currentPassword = document.getElementById('current-password').value;
+    const newPassword = document.getElementById('new-password').value;
+    
+    // Get all users
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    
+    // Find current user
+    const userIndex = users.findIndex(u => u.id === user.id);
+    
+    if (userIndex === -1) {
+        showFormError(profileForm, 'User not found');
+        return;
+    }
+    
+    // Validate current password if provided
+    if (currentPassword && currentPassword !== users[userIndex].password) {
+        showFormError(profileForm, 'Current password is incorrect');
+        return;
+    }
+    
+    // Check if email is already taken by another user
+    if (email !== user.email && users.some(u => u.email === email && u.id !== user.id)) {
+        showFormError(profileForm, 'Email already registered by another user');
+        return;
+    }
+    
+    // Check if username is already taken by another user
+    if (username !== user.username && users.some(u => u.username === username && u.id !== user.id)) {
+        showFormError(profileForm, 'Username already taken by another user');
+        return;
+    }
+    
+    // Update user data
+    users[userIndex].username = username;
+    users[userIndex].email = email;
+    
+    // Update password if provided
+    if (newPassword) {
+        users[userIndex].password = newPassword; // NOTE: In production, hash passwords
+    }
+    
+    // Save updated users to localStorage
+    localStorage.setItem('users', JSON.stringify(users));
+    
+    // Update current user in session (without password)
+    const { password, ...updatedUser } = users[userIndex];
+    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    
+    // Show success message
+    showFormSuccess(profileForm, 'Profile updated successfully');
+}
+
+/**
+ * Display user orders in the order history container
+ */
 function displayUserOrders() {
     const orderHistoryContainer = document.getElementById('order-history');
     
@@ -333,6 +385,7 @@ function displayUserOrders() {
             itemsList += `<li>${item.quantity}x ${item.name}</li>`;
         });
         
+        // Build order card HTML
         orderElement.innerHTML = `
             <div class="order-header">
                 <div>
@@ -369,6 +422,10 @@ function displayUserOrders() {
     });
 }
 
+/**
+ * Display detailed order information in a modal
+ * @param {string} orderId - ID of the order to display
+ */
 function viewOrderDetails(orderId) {
     // Get all orders
     const orders = JSON.parse(localStorage.getItem('orders')) || [];
@@ -382,7 +439,7 @@ function viewOrderDetails(orderId) {
     const modal = document.createElement('div');
     modal.className = 'modal';
     
-    // Format date
+    // Format date with detailed information
     const orderDate = new Date(order.date);
     const formattedDate = orderDate.toLocaleDateString('en-US', {
         year: 'numeric',
@@ -403,6 +460,7 @@ function viewOrderDetails(orderId) {
         `;
     });
     
+    // Build modal HTML
     modal.innerHTML = `
         <div class="modal-content">
             <div class="modal-header">
@@ -444,13 +502,22 @@ function viewOrderDetails(orderId) {
     // Add modal to body
     document.body.appendChild(modal);
     
-    // Add event listener to close button
+    // Add event listeners for closing the modal
+    setupModalCloseEvents(modal);
+}
+
+/**
+ * Setup event listeners for closing a modal
+ * @param {HTMLElement} modal - The modal element
+ */
+function setupModalCloseEvents(modal) {
+    // Close on X button click
     const closeButton = modal.querySelector('.close-modal');
     closeButton.addEventListener('click', function() {
         modal.remove();
     });
     
-    // Close modal when clicking outside of content
+    // Close when clicking outside of content
     modal.addEventListener('click', function(event) {
         if (event.target === modal) {
             modal.remove();
@@ -458,14 +525,19 @@ function viewOrderDetails(orderId) {
     });
 }
 
+/**
+ * Log in a user and store their information in localStorage
+ * @param {Object} user - User object to store
+ */
 function login(user) {
-    // Store user in localStorage
     localStorage.setItem('currentUser', JSON.stringify(user));
     localStorage.setItem('isLoggedIn', 'true');
 }
 
+/**
+ * Log out a user and remove their information from localStorage
+ */
 function logout() {
-    // Remove user from localStorage
     localStorage.removeItem('currentUser');
     localStorage.removeItem('isLoggedIn');
     
@@ -473,6 +545,10 @@ function logout() {
     window.location.href = '../index.html';
 }
 
+/**
+ * Check authentication status and redirect if needed
+ * Controls access to protected pages based on user role
+ */
 function checkAuth() {
     // Check if user is logged in
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -481,18 +557,26 @@ function checkAuth() {
     // Get current page path
     const path = window.location.pathname;
     
-    // Redirect logic for protected pages
-    if (path.includes('/admin/') && (!isLoggedIn || currentUser.role !== 'admin')) {
+    // Handle admin page access - restrict to admin users only
+    if (path.includes('/admin/') && (!isLoggedIn || currentUser?.role !== 'admin')) {
         window.location.href = '../login.html';
         return;
     }
     
-    if (path.includes('/staff/') && (!isLoggedIn || (currentUser.role !== 'staff' && currentUser.role !== 'admin'))) {
+    // Handle staff page access - allow both staff and admin roles
+    if (path.includes('/staff/') && (!isLoggedIn || (currentUser?.role !== 'staff' && currentUser?.role !== 'admin'))) {
         window.location.href = '../login.html';
         return;
     }
     
     // Setup logout buttons
+    setupLogoutButtons();
+}
+
+/**
+ * Setup event listeners for all logout buttons
+ */
+function setupLogoutButtons() {
     const logoutButtons = document.querySelectorAll('.logout-btn');
     logoutButtons.forEach(button => {
         button.addEventListener('click', function(e) {
@@ -502,12 +586,14 @@ function checkAuth() {
     });
 }
 
+/**
+ * Display an error message on a form
+ * @param {HTMLElement} form - The form element
+ * @param {string} message - Error message to display
+ */
 function showFormError(form, message) {
-    // Remove any existing error messages
-    const existingError = form.querySelector('.form-error');
-    if (existingError) {
-        existingError.remove();
-    }
+    // Clear existing messages first
+    clearFormMessages(form);
     
     // Create error element
     const errorElement = document.createElement('div');
@@ -518,17 +604,14 @@ function showFormError(form, message) {
     form.insertBefore(errorElement, form.firstChild);
 }
 
+/**
+ * Display a success message on a form
+ * @param {HTMLElement} form - The form element
+ * @param {string} message - Success message to display
+ */
 function showFormSuccess(form, message) {
-    // Remove any existing messages
-    const existingError = form.querySelector('.form-error');
-    if (existingError) {
-        existingError.remove();
-    }
-    
-    const existingSuccess = form.querySelector('.form-success');
-    if (existingSuccess) {
-        existingSuccess.remove();
-    }
+    // Clear existing messages first
+    clearFormMessages(form);
     
     // Create success element
     const successElement = document.createElement('div');
@@ -537,4 +620,22 @@ function showFormSuccess(form, message) {
     
     // Add to form
     form.insertBefore(successElement, form.firstChild);
+}
+
+/**
+ * Clear all message elements from a form
+ * @param {HTMLElement} form - The form element
+ */
+function clearFormMessages(form) {
+    // Remove any existing error messages
+    const existingError = form.querySelector('.form-error');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    // Remove any existing success messages
+    const existingSuccess = form.querySelector('.form-success');
+    if (existingSuccess) {
+        existingSuccess.remove();
+    }
 }
