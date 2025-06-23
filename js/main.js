@@ -1,6 +1,39 @@
+/**
+ * Main e-commerce website JavaScript
+ * Handles navigation, shopping cart, user account, and UI interactions
+ */
+
 // Wait for the DOM to load completely
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile Navigation Toggle
+    initializeMobileNav();
+    
+    // Newsletter Form Submission
+    initializeNewsletterForm();
+    
+    // Load cart count from localStorage
+    updateCartCount();
+    
+    // Account dropdown functionality
+    initializeAccountDropdown();
+    
+    // Initialize menu functionality (if on menu page)
+    initializeMenu();
+    
+    // Setup add to cart buttons
+    setupAddToCartButtons();
+    
+    // Setup category navigation highlighting
+    setupCategoryNavigation();
+    
+    // Setup quantity selectors if on order-online page
+    setupQuantitySelectors();
+});
+
+/**
+ * Mobile Navigation Functions
+ */
+function initializeMobileNav() {
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
     
@@ -41,8 +74,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
-    // Newsletter Form Submission
+}
+
+/**
+ * Newsletter Form Functions
+ */
+function initializeNewsletterForm() {
     const newsletterForm = document.getElementById('newsletter-form');
     if (newsletterForm) {
         newsletterForm.addEventListener('submit', function(e) {
@@ -52,11 +89,12 @@ document.addEventListener('DOMContentLoaded', function() {
             this.reset();
         });
     }
-    
-    // Load cart count from localStorage
-    updateCartCount();
-    
-    // Account dropdown functionality
+}
+
+/**
+ * Account Functions
+ */
+function initializeAccountDropdown() {
     const accountLink = document.getElementById('account-link');
     const dropdownContent = document.querySelector('.dropdown-content');
     
@@ -97,7 +135,11 @@ document.addEventListener('DOMContentLoaded', function() {
             dropdownContent.appendChild(logoutLink);
         }
     }
-});
+}
+
+/**
+ * Cart Functions
+ */
 
 // Function to update cart count
 function updateCartCount() {
@@ -114,13 +156,13 @@ function updateCartCount() {
     }
 }
 
-// Add to cart function (will be called from product pages)
+// Add to cart function - consolidated version
 function addToCart(itemId, name, price, quantity = 1) {
     // Get existing cart items from localStorage
     let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
     
     // Check if item already exists in cart
-    const existingItemIndex = cartItems.findIndex(item => item.id === itemId);
+    const existingItemIndex = cartItems.findIndex(item => item.id == itemId);
     
     if (existingItemIndex !== -1) {
         // Update quantity if item exists
@@ -130,7 +172,7 @@ function addToCart(itemId, name, price, quantity = 1) {
         cartItems.push({
             id: itemId,
             name: name,
-            price: price,
+            price: parseFloat(price),
             quantity: quantity
         });
     }
@@ -141,8 +183,8 @@ function addToCart(itemId, name, price, quantity = 1) {
     // Update cart count in the UI
     updateCartCount();
     
-    // Show confirmation message
-    alert(`${name} added to cart!`);
+    // Show feedback to user
+    showAddToCartFeedback(name);
 }
 
 // Remove from cart function
@@ -166,24 +208,9 @@ function removeFromCart(itemId) {
     }
 }
 
-// Update cart item quantity
-function updateCartItemQuantity(itemId, quantity) {
-    //
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize menu functionality
-    initializeMenu();
-    
-    // Setup add to cart buttons
-    setupAddToCartButtons();
-    
-    // Setup category navigation highlighting
-    setupCategoryNavigation();
-    
-    // Setup quantity selectors if on order-online page
-    setupQuantitySelectors();
-});
-
+/**
+ * Menu Page Functions
+ */
 function initializeMenu() {
     // Could load menu items dynamically from an API here
     // For now, we're using static HTML
@@ -261,6 +288,9 @@ function setupCategoryNavigation() {
     });
 }
 
+/**
+ * Product Quantity Controls
+ */
 function setupQuantitySelectors() {
     const quantityControls = document.querySelectorAll('.quantity-controls');
     
@@ -290,58 +320,11 @@ function setupQuantitySelectors() {
             });
         }
     });
-}}
-
-
-// Function to add item to cart
-function addToCart(id, name, price) {
-    // Get current cart items
-    let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-    
-    // Check if item already exists in cart
-    const existingItemIndex = cartItems.findIndex(item => item.id == id);
-    
-    if (existingItemIndex !== -1) {
-        // Item exists, increase quantity
-        cartItems[existingItemIndex].quantity += 1;
-    } else {
-        // Item doesn't exist, add new item
-        cartItems.push({
-            id: id,
-            name: name,
-            price: parseFloat(price),
-            quantity: 1
-        });
-    }
-    
-    // Save to localStorage
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-    
-    // Update cart count
-    updateCartCount();
-    
-    // Show feedback
-    showAddToCartFeedback(name);
 }
 
-// Event listeners for add to cart buttons
-document.addEventListener('DOMContentLoaded', function() {
-    const addToCartButtons = document.querySelectorAll('.add-to-cart');
-    
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const id = this.getAttribute('data-id');
-            const name = this.getAttribute('data-name');
-            const price = this.getAttribute('data-price');
-            
-            addToCart(id, name, price);
-        });
-    });
-    
-    // Initialize cart count
-    updateCartCount();
-});
-
+/**
+ * UI Feedback Functions
+ */
 function showAddToCartFeedback(itemName) {
     // Create feedback element
     const feedback = document.createElement('div');
