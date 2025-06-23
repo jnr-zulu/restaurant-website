@@ -1,6 +1,9 @@
 /**
  * Authentication and User Management System
  * This module handles user authentication, registration, profile management, and order display.
+ * 
+ * @author Patrick-Jnr Zulu
+ * @version 1.0
  */
 
 // Initialize all forms and check authentication when DOM is loaded
@@ -34,69 +37,85 @@ function initializeForms() {
     }
 }
 
+// Email validation regex pattern - used across multiple validation functions
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 /**
  * Validate form inputs based on form type
  * @param {string} formId - ID of the form to validate
  * @returns {boolean} - Whether the form is valid
  */
 function validateForm(formId) {
-  // Create reusable email pattern
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
   // Different validation based on form type
   switch(formId) {
     case 'login-form':
-      const email = document.getElementById('login-email')?.value;
-      const password = document.getElementById('login-password')?.value;
-      
-      // Check required fields
-      if (!email || !password) {
-        alert('Please fill out all required fields');
-        return false;
-      }
-      
-      // Validate email format
-      if (!emailPattern.test(email)) {
-        alert('Please enter a valid email address');
-        return false;
-      }
-      
-      return true;
+      return validateLoginForm();
       
     case 'register-form':
-      const username = document.getElementById('register-username')?.value;
-      const regEmail = document.getElementById('register-email')?.value;
-      const regPassword = document.getElementById('register-password')?.value;
-      const confirmPassword = document.getElementById('confirm-password')?.value;
-      
-      // Check required fields
-      if (!username || !regEmail || !regPassword || !confirmPassword) {
-        alert('Please fill out all required fields');
-        return false;
-      }
-      
-      // Validate email format
-      if (!emailPattern.test(regEmail)) {
-        alert('Please enter a valid email address');
-        return false;
-      }
-      
-      // Check password match
-      if (regPassword !== confirmPassword) {
-        alert('Passwords do not match');
-        return false;
-      }
-      
-      return true;
+      return validateRegistrationForm();
       
     case 'profile-form':
-      // Profile form validation
-      // Add your profile validation logic here
+      // Profile form validation logic to be implemented
       return true;
       
     default:
-      return false; // Unknown form
+      console.warn(`Unknown form type: ${formId}`);
+      return false;
   }
+}
+
+/**
+ * Validate login form inputs
+ * @returns {boolean} - Whether the form is valid
+ */
+function validateLoginForm() {
+  const email = document.getElementById('login-email')?.value;
+  const password = document.getElementById('login-password')?.value;
+  
+  // Check required fields
+  if (!email || !password) {
+    alert('Please fill out all required fields');
+    return false;
+  }
+  
+  // Validate email format
+  if (!EMAIL_PATTERN.test(email)) {
+    alert('Please enter a valid email address');
+    return false;
+  }
+  
+  return true;
+}
+
+/**
+ * Validate registration form inputs
+ * @returns {boolean} - Whether the form is valid
+ */
+function validateRegistrationForm() {
+  const username = document.getElementById('register-username')?.value;
+  const email = document.getElementById('register-email')?.value;
+  const password = document.getElementById('register-password')?.value;
+  const confirmPassword = document.getElementById('confirm-password')?.value;
+  
+  // Check required fields
+  if (!username || !email || !password || !confirmPassword) {
+    alert('Please fill out all required fields');
+    return false;
+  }
+  
+  // Validate email format
+  if (!EMAIL_PATTERN.test(email)) {
+    alert('Please enter a valid email address');
+    return false;
+  }
+  
+  // Check password match
+  if (password !== confirmPassword) {
+    alert('Passwords do not match');
+    return false;
+  }
+  
+  return true;
 }
 
 /**
@@ -116,7 +135,8 @@ function initializeLoginForm() {
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         
-        // Check admin credentials
+        // Check admin credentials - hardcoded for demonstration
+        // NOTE: In production, use secure authentication methods
         if (email === 'admin@waffleheaven.com' && password === '0824669786Jnr') {
             login({
                 id: 'admin',
@@ -128,7 +148,8 @@ function initializeLoginForm() {
             return;
         }
         
-        // Check staff credentials
+        // Check staff credentials - hardcoded for demonstration
+        // NOTE: In production, use secure authentication methods
         if (email === 'staff@waffleheaven.com' && password === '0824669786Jnr') {
             login({
                 id: 'staff',
@@ -145,7 +166,7 @@ function initializeLoginForm() {
         const user = users.find(u => u.email === email);
         
         if (user && user.password === password) {
-            // Remove password before storing in session
+            // Remove password before storing in session for security
             const { password, ...userWithoutPassword } = user;
             login(userWithoutPassword);
             window.location.href = '../index.html';
@@ -190,12 +211,12 @@ function initializeRegisterForm() {
             return;
         }
         
-        // Create new user object
+        // Create new user object with timestamp for unique ID
         const newUser = {
             id: Date.now().toString(),
             username: username,
             email: email,
-            password: password,
+            password: password, // NOTE: In production, hash passwords before storing
             role: 'customer',
             createdAt: new Date().toISOString()
         };
@@ -204,7 +225,7 @@ function initializeRegisterForm() {
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
         
-        // Login the new user
+        // Login the new user (remove password for security)
         const { password: pwd, ...userWithoutPassword } = newUser;
         login(userWithoutPassword);
         
@@ -221,6 +242,7 @@ function initializeProfilePage() {
     const user = JSON.parse(localStorage.getItem('currentUser'));
     
     if (!user) {
+        // Redirect to login if not authenticated
         window.location.href = 'login.html';
         return;
     }
@@ -301,13 +323,13 @@ function handleProfileUpdate(e) {
     
     // Update password if provided
     if (newPassword) {
-        users[userIndex].password = newPassword;
+        users[userIndex].password = newPassword; // NOTE: In production, hash passwords
     }
     
     // Save updated users to localStorage
     localStorage.setItem('users', JSON.stringify(users));
     
-    // Update current user in session
+    // Update current user in session (without password)
     const { password, ...updatedUser } = users[userIndex];
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
     
@@ -504,7 +526,7 @@ function setupModalCloseEvents(modal) {
 }
 
 /**
- * Log in a user and store their information
+ * Log in a user and store their information in localStorage
  * @param {Object} user - User object to store
  */
 function login(user) {
@@ -513,7 +535,7 @@ function login(user) {
 }
 
 /**
- * Log out a user and remove their information
+ * Log out a user and remove their information from localStorage
  */
 function logout() {
     localStorage.removeItem('currentUser');
@@ -525,6 +547,7 @@ function logout() {
 
 /**
  * Check authentication status and redirect if needed
+ * Controls access to protected pages based on user role
  */
 function checkAuth() {
     // Check if user is logged in
@@ -534,13 +557,13 @@ function checkAuth() {
     // Get current page path
     const path = window.location.pathname;
     
-    // Handle admin page access
+    // Handle admin page access - restrict to admin users only
     if (path.includes('/admin/') && (!isLoggedIn || currentUser?.role !== 'admin')) {
         window.location.href = '../login.html';
         return;
     }
     
-    // Handle staff page access
+    // Handle staff page access - allow both staff and admin roles
     if (path.includes('/staff/') && (!isLoggedIn || (currentUser?.role !== 'staff' && currentUser?.role !== 'admin'))) {
         window.location.href = '../login.html';
         return;
@@ -569,11 +592,8 @@ function setupLogoutButtons() {
  * @param {string} message - Error message to display
  */
 function showFormError(form, message) {
-    // Remove any existing error messages
-    const existingError = form.querySelector('.form-error');
-    if (existingError) {
-        existingError.remove();
-    }
+    // Clear existing messages first
+    clearFormMessages(form);
     
     // Create error element
     const errorElement = document.createElement('div');
@@ -590,16 +610,8 @@ function showFormError(form, message) {
  * @param {string} message - Success message to display
  */
 function showFormSuccess(form, message) {
-    // Remove any existing messages
-    const existingError = form.querySelector('.form-error');
-    if (existingError) {
-        existingError.remove();
-    }
-    
-    const existingSuccess = form.querySelector('.form-success');
-    if (existingSuccess) {
-        existingSuccess.remove();
-    }
+    // Clear existing messages first
+    clearFormMessages(form);
     
     // Create success element
     const successElement = document.createElement('div');
@@ -608,4 +620,22 @@ function showFormSuccess(form, message) {
     
     // Add to form
     form.insertBefore(successElement, form.firstChild);
+}
+
+/**
+ * Clear all message elements from a form
+ * @param {HTMLElement} form - The form element
+ */
+function clearFormMessages(form) {
+    // Remove any existing error messages
+    const existingError = form.querySelector('.form-error');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    // Remove any existing success messages
+    const existingSuccess = form.querySelector('.form-success');
+    if (existingSuccess) {
+        existingSuccess.remove();
+    }
 }
