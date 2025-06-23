@@ -1,11 +1,20 @@
+/**
+ * Restaurant Reservation System
+ * This script handles the restaurant's online reservation system,
+ * including form validation, date/time selection, and confirmation display.
+ */
+
+// Initialize when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize reservation form
     initializeReservationForm();
-    
-    // Setup date and time pickers
     setupDateTimePickers();
 });
 
+/**
+ * Validates all form fields for the reservation form
+ * @param {string} formId - The HTML ID of the form to validate
+ * @returns {boolean} - Whether the form is valid
+ */
 function validateForm(formId) {
     // Get form elements
     const form = document.getElementById(formId);
@@ -16,27 +25,27 @@ function validateForm(formId) {
     const time = form.querySelector('[name="time"]').value;
     const guests = form.querySelector('[name="guests"]').value;
     
-    // Basic validation
+    // Check for empty required fields
     if (!name || !email || !phone || !date || !time || !guests) {
         alert('Please fill out all required fields');
         return false;
     }
     
-    // Email validation
+    // Email format validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
         alert('Please enter a valid email address');
         return false;
     }
     
-    // Phone validation (basic)
+    // Phone number format validation
     const phonePattern = /^[0-9+\-\s()]{10,15}$/;
     if (!phonePattern.test(phone)) {
         alert('Please enter a valid phone number');
         return false;
     }
     
-    // Guest number validation
+    // Guest count validation (1-20 people)
     const guestNum = parseInt(guests);
     if (isNaN(guestNum) || guestNum < 1 || guestNum > 20) {
         alert('Please enter a valid number of guests (1-20)');
@@ -46,6 +55,9 @@ function validateForm(formId) {
     return true;
 }
 
+/**
+ * Sets up the reservation form submission handler
+ */
 function initializeReservationForm() {
     const reservationForm = document.getElementById('reservation-form');
     
@@ -53,12 +65,11 @@ function initializeReservationForm() {
         reservationForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Validate form
             if (!validateForm('reservation-form')) {
                 return;
             }
             
-            // Get form data
+            // Collect form data into an object
             const formData = new FormData(this);
             const reservationData = {
                 name: formData.get('name'),
@@ -68,92 +79,90 @@ function initializeReservationForm() {
                 time: formData.get('time'),
                 guests: formData.get('guests'),
                 occasion: formData.get('occasion'),
-                requests: formData.get('special-requests')
+                requests: formData.get('special-requests'),
+                id: Date.now(),
+                status: 'pending'
             };
             
-            // In a real app, this would be sent to the server via AJAX
-            // For demo purposes, we'll just store it in localStorage
+            // Store reservation data
+            saveReservation(reservationData);
             
-            // Get existing reservations
-            let reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-            
-            // Add new reservation with a unique ID
-            reservationData.id = Date.now();
-            reservationData.status = 'pending';
-            reservations.push(reservationData);
-            
-            // Save to localStorage
-            localStorage.setItem('reservations', JSON.stringify(reservations));
-            
-            // Show success message
+            // Display confirmation and reset form
             showReservationConfirmation(reservationData);
-            
-            // Reset form
             this.reset();
         });
     }
 }
 
+/**
+ * Saves the reservation to localStorage
+ * @param {Object} reservationData - The reservation data to save
+ */
+function saveReservation(reservationData) {
+    // In a production app, this would be an API call
+    let reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    reservations.push(reservationData);
+    localStorage.setItem('reservations', JSON.stringify(reservations));
+}
+
+/**
+ * Configures the date and time input fields with appropriate constraints
+ */
 function setupDateTimePickers() {
     const dateInput = document.getElementById('reservation-date');
     const timeInput = document.getElementById('reservation-time');
     
     if (dateInput) {
-        // Set min date to today
+        // Set date range (today to 3 months from now)
         const today = new Date();
-        const formattedDate = today.toISOString().split('T')[0];
-        dateInput.setAttribute('min', formattedDate);
+        dateInput.setAttribute('min', today.toISOString().split('T')[0]);
         
-        // Set max date to 3 months from now
         const maxDate = new Date();
         maxDate.setMonth(maxDate.getMonth() + 3);
-        const formattedMaxDate = maxDate.toISOString().split('T')[0];
-        dateInput.setAttribute('max', formattedMaxDate);
+        dateInput.setAttribute('max', maxDate.toISOString().split('T')[0]);
     }
     
     if (timeInput) {
-        // Set available time slots
-        timeInput.innerHTML = '';
-        
-        // Restaurant hours: 8 AM - 10 PM
-        const openingHour = 8;
-        const closingHour = 22;
-        
-        // Create time slots at 30-minute intervals
-        for (let hour = openingHour; hour < closingHour; hour++) {
-            for (let minute = 0; minute < 60; minute += 30) {
-                const formattedHour = hour.toString().padStart(2, '0');
-                const formattedMinute = minute.toString().padStart(2, '0');
-                const timeValue = `${formattedHour}:${formattedMinute}`;
-                
-                // Convert to 12-hour format for display
-                let displayHour = hour;
-                let period = 'AM';
-                
-                if (hour >= 12) {
-                    period = 'PM';
-                    if (hour > 12) {
-                        displayHour = hour - 12;
-                    }
-                }
-                
-                if (displayHour === 0) {
-                    displayHour = 12;
-                }
-                
-                const displayTime = `${displayHour}:${formattedMinute} ${period}`;
-                
-                const option = document.createElement('option');
-                option.value = timeValue;
-                option.textContent = displayTime;
-                timeInput.appendChild(option);
-            }
+        populateTimeSlots(timeInput);
+    }
+}
+
+/**
+ * Fills the time dropdown with available reservation slots
+ * @param {HTMLElement} timeInput - The time select element
+ */
+function populateTimeSlots(timeInput) {
+    timeInput.innerHTML = '';
+    
+    // Restaurant hours (8:00 AM - 10:00 PM)
+    const openingHour = 8;
+    const closingHour = 22;
+    
+    // Create 30-minute interval time slots
+    for (let hour = openingHour; hour < closingHour; hour++) {
+        for (let minute = 0; minute < 60; minute += 30) {
+            const formattedHour = hour.toString().padStart(2, '0');
+            const formattedMinute = minute.toString().padStart(2, '0');
+            const timeValue = `${formattedHour}:${formattedMinute}`;
+            
+            // Format for display (12-hour format)
+            let displayHour = hour % 12 || 12; // Convert 0 to 12
+            let period = hour >= 12 ? 'PM' : 'AM';
+            const displayTime = `${displayHour}:${formattedMinute} ${period}`;
+            
+            const option = document.createElement('option');
+            option.value = timeValue;
+            option.textContent = displayTime;
+            timeInput.appendChild(option);
         }
     }
 }
 
+/**
+ * Displays a confirmation message after successful reservation
+ * @param {Object} reservationData - The submitted reservation data
+ */
 function showReservationConfirmation(reservationData) {
-    // Create a confirmation message
     const reservationForm = document.getElementById('reservation-form');
     const formContainer = reservationForm.parentElement;
     
@@ -161,7 +170,7 @@ function showReservationConfirmation(reservationData) {
     const confirmationDiv = document.createElement('div');
     confirmationDiv.className = 'reservation-confirmation';
     
-    // Format date and time for display
+    // Format date and time for readable display
     const dateObj = new Date(reservationData.date + 'T' + reservationData.time);
     const formattedDate = dateObj.toLocaleDateString('en-US', {
         weekday: 'long',
@@ -176,7 +185,7 @@ function showReservationConfirmation(reservationData) {
         hour12: true
     });
     
-    // Build confirmation message
+    // Build confirmation message HTML
     confirmationDiv.innerHTML = `
         <div class="confirmation-icon">✓</div>
         <h2>Reservation Confirmed!</h2>
@@ -192,15 +201,14 @@ function showReservationConfirmation(reservationData) {
         <button class="btn primary-btn" id="new-reservation-btn">Make Another Reservation</button>
     `;
     
-    // Hide form and show confirmation
+    // Hide form and display confirmation
     reservationForm.style.display = 'none';
     formContainer.appendChild(confirmationDiv);
     
-    // Add event listener to "Make Another Reservation" button
+    // Add event listener for "Make Another Reservation" button
     const newReservationBtn = document.getElementById('new-reservation-btn');
     if (newReservationBtn) {
         newReservationBtn.addEventListener('click', function() {
-            // Remove confirmation and show form again
             confirmationDiv.remove();
             reservationForm.style.display = 'block';
         });
