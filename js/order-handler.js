@@ -1,37 +1,8 @@
-// order-handler.js// order-handler.js
-document.addEventListener('DOMContentLoaded', function() {
-    // Get references to elements
-    const deliveryOption = document.getElementById('delivery-option');
-    const pickupOption = document.getElementById('pickup-option');
-    const deliveryForm = document.getElementById('delivery-form');
-    const pickupForm = document.getElementById('pickup-form');
-    const menuSection = document.getElementById('menu-section');
-    const addressForm = document.getElementById('address-form');
-    const continueToMenuBtn = document.getElementById('continue-to-menu');
-    
-    // Essential function - shows the menu section
-    function showMenuSection() {
-        menuSection.style.display = 'block';
-        document.querySelector('.order-options').style.display = 'none';
-    }
-    
-    // Fix for the Continue to Menu button (pickup option)
-    if (continueToMenuBtn) {
-        continueToMenuBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            showMenuSection();
-        });
-    }
-    
-    // Handle delivery form submission
-    if (addressForm) {
-        addressForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            showMenuSection(); // Show menu immediately
-        });
-    }
-});
-
+// order-handler.js
+/**
+ * Main order handling module for food ordering system
+ * Handles delivery/pickup options, menu display, and order management
+ */
 
 document.addEventListener('DOMContentLoaded', function() {
     // Get references to elements
@@ -43,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const addressForm = document.getElementById('address-form');
     const continueToMenuBtn = document.getElementById('continue-to-menu');
     
-    // Set up order type selection
+    // Setup order type selection
     deliveryOption.addEventListener('click', function() {
         deliveryOption.classList.add('active');
         pickupOption.classList.remove('active');
@@ -58,20 +29,22 @@ document.addEventListener('DOMContentLoaded', function() {
         deliveryForm.style.display = 'none';
     });
     
-    // Function to show menu section
+    // Function to show menu section and hide order options
     function showMenuSection() {
         menuSection.style.display = 'block';
         document.querySelector('.order-options').style.display = 'none';
         
-        // Load menu items from Supabase
+        // Load menu items from database
         loadMenuItemsFromSupabase();
     }
     
-    // Fix for the Continue to Menu button
-    continueToMenuBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        showMenuSection();
-    });
+    // Handle "Continue to Menu" button for pickup option
+    if (continueToMenuBtn) {
+        continueToMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showMenuSection();
+        });
+    }
     
     // Handle delivery address form submission
     if (addressForm) {
@@ -85,14 +58,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 province: document.getElementById('province').value,
                 postal_code: document.getElementById('postal').value,
                 delivery_notes: document.getElementById('delivery-notes').value,
-                user_id: getCurrentUserId() // You'd need to implement this function
+                user_id: getCurrentUserId() // Function defined elsewhere
             };
             
             try {
-                // Save address to Supabase
+                // Save address to database
                 await saveDeliveryAddress(addressData);
-                
-                // Show menu section
                 showMenuSection();
             } catch (error) {
                 console.error('Error saving address:', error);
@@ -101,7 +72,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Function to load menu items from Supabase
+    /**
+     * Loads menu items from database and organizes by category
+     */
     async function loadMenuItemsFromSupabase() {
         try {
             const menuItems = await fetchMenuItems();
@@ -140,7 +113,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Function to create a menu item element
+    /**
+     * Creates DOM element for a menu item
+     * @param {Object} item - Menu item data
+     * @returns {HTMLElement} - Menu item DOM element
+     */
     function createMenuItemElement(item) {
         const menuItem = document.createElement('div');
         menuItem.className = 'menu-item';
@@ -172,15 +149,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-
-
-
+/**
+ * OrderHandler class - Manages user orders, admin functionality
+ */
 class OrderHandler {
   constructor() {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
   }
 
-  // Get user orders
+  /**
+   * Retrieves orders for the current user
+   * @param {string} userId - Optional user ID, defaults to current user
+   * @returns {Array} - List of user orders
+   */
   async getUserOrders(userId = null) {
     try {
       const queryUserId = userId || (this.currentUser ? this.currentUser.user_id : null);
@@ -199,7 +180,11 @@ class OrderHandler {
     }
   }
 
-  // Get all orders (admin only)
+  /**
+   * Admin function to get all orders
+   * @param {string} status - Optional status filter
+   * @returns {Array} - List of all orders
+   */
   async getAllOrders(status = null) {
     try {
       let url = '/.netlify/functions/get-orders';
@@ -218,7 +203,13 @@ class OrderHandler {
     }
   }
 
-  // Update order status (admin/staff only)
+  /**
+   * Updates the status of an order (admin only)
+   * @param {string} orderId - Order ID to update
+   * @param {string} newStatus - New order status
+   * @param {string} paymentStatus - Optional payment status update
+   * @returns {Object|boolean} - Updated order or false if failed
+   */
   async updateOrderStatus(orderId, newStatus, paymentStatus = null) {
     try {
       const updateData = {
@@ -252,7 +243,12 @@ class OrderHandler {
     }
   }
 
-  // Display orders in a container
+  /**
+   * Displays orders in a specified container
+   * @param {Array} orders - List of orders to display
+   * @param {string} containerId - ID of container element
+   * @param {boolean} isAdmin - Whether to show admin controls
+   */
   displayOrders(orders, containerId, isAdmin = false) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -265,7 +261,12 @@ class OrderHandler {
     container.innerHTML = orders.map(order => this.createOrderCard(order, isAdmin)).join('');
   }
 
-  // Create order card HTML
+  /**
+   * Creates HTML for an order card
+   * @param {Object} order - Order data
+   * @param {boolean} isAdmin - Whether to show admin controls
+   * @returns {string} - HTML for the order card
+   */
   createOrderCard(order, isAdmin = false) {
     const orderDate = new Date(order.order_date).toLocaleDateString('en-ZA', {
       year: 'numeric',
@@ -342,7 +343,11 @@ class OrderHandler {
     `;
   }
 
-  // Create admin action buttons for orders
+  /**
+   * Creates HTML for admin order action controls
+   * @param {Object} order - Order data
+   * @returns {string} - HTML for the admin actions
+   */
   createAdminOrderActions(order) {
     const statusOptions = ['pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'];
     const paymentOptions = ['pending', 'paid', 'failed'];
@@ -373,7 +378,9 @@ class OrderHandler {
     `;
   }
 
-  // Initialize admin order management
+  /**
+   * Sets up event listeners for admin order management
+   */
   initializeAdminOrderManagement() {
     document.addEventListener('click', async (e) => {
       if (e.target.classList.contains('update-order-btn')) {
@@ -396,17 +403,27 @@ class OrderHandler {
     });
   }
 
-  // Show success message
+  /**
+   * Shows a success notification
+   * @param {string} message - Message to display
+   */
   showSuccess(message) {
     this.showNotification(message, 'success');
   }
 
-  // Show error message
+  /**
+   * Shows an error notification
+   * @param {string} message - Message to display
+   */
   showError(message) {
     this.showNotification(message, 'error');
   }
 
-  // Show notification
+  /**
+   * Shows a notification popup
+   * @param {string} message - Message to display
+   * @param {string} type - Notification type (success, error, info)
+   */
   showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 ${
