@@ -1,21 +1,22 @@
 // /netlify/functions/create-reservation.js
+// This serverless function handles reservation creation for Waffle Heaven restaurant
 
 const { createClient } = require('@supabase/supabase-js');
 
-// Initialize Supabase client
+// Initialize Supabase client with environment variables
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 exports.handler = async (event, context) => {
-  // Set CORS headers
+  // Set CORS headers to allow cross-origin requests
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS'
   };
   
-  // Handle preflight OPTIONS request
+  // Handle preflight OPTIONS request for CORS
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
@@ -23,7 +24,7 @@ exports.handler = async (event, context) => {
     };
   }
   
-  // Ensure request method is POST
+  // API only accepts POST requests
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -33,11 +34,11 @@ exports.handler = async (event, context) => {
   }
   
   try {
-    // Parse request body
+    // Parse and extract reservation details from request body
     const data = JSON.parse(event.body);
     const { customer_name, email, phone, date, time, party_size, special_requests } = data;
     
-    // Validate required fields
+    // Validate that all required fields are present
     if (!customer_name || !email || !date || !time || !party_size) {
       return {
         statusCode: 400,
@@ -46,7 +47,7 @@ exports.handler = async (event, context) => {
       };
     }
     
-    // Create reservation in database
+    // Insert new reservation record into Supabase database
     const { data: reservation, error } = await supabase
       .from('reservations')
       .insert([
@@ -58,12 +59,12 @@ exports.handler = async (event, context) => {
           reservation_time: time,
           party_size,
           special_requests,
-          status: 'pending'
+          status: 'pending'  // All new reservations start with pending status
         }
       ])
       .select();
     
-    // Handle database errors
+    // Handle any database errors during insertion
     if (error) {
       console.error('Database error:', error);
       return {
@@ -73,7 +74,7 @@ exports.handler = async (event, context) => {
       };
     }
     
-    // Send confirmation email (commented out for now, implement with email service)
+    // TODO: Implement email confirmation service
     /*
     await sendConfirmationEmail({
       to: email,
@@ -86,7 +87,7 @@ exports.handler = async (event, context) => {
     });
     */
     
-    // Return success response
+    // Return success response with the new reservation ID
     return {
       statusCode: 201,
       headers,
@@ -97,6 +98,7 @@ exports.handler = async (event, context) => {
     };
     
   } catch (err) {
+    // Catch and log any unexpected errors
     console.error('Function error:', err);
     return {
       statusCode: 500,
